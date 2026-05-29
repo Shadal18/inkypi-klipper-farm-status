@@ -21,7 +21,7 @@
     Printers
   </div>
 
-  <div id="printers_container" style="display: flex; flex-direction: column; gap: 14px; min-width: 0"></div>
+  <div id="printers_container" class="printers-container"></div>
 
   <button
     type="button"
@@ -154,6 +154,14 @@
 </div>
 
 <style>
+  .printers-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    width: 100%;
+  }
+
   .printer-card {
     border: 1px solid #dcdfe3;
     border-radius: 10px;
@@ -164,6 +172,9 @@
     box-sizing: border-box;
     min-width: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
   }
 
   .printer-card-header {
@@ -180,6 +191,7 @@
     font-weight: 700;
     color: #444;
     min-width: 0;
+    flex: 1 1 auto;
   }
 
   .remove-printer-btn {
@@ -191,18 +203,34 @@
     cursor: pointer;
     font-weight: 700;
     flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .printer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .test-printer-btn {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .printer-test-result {
     display: none;
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 0.92rem;
-    font-weight: 600;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     min-width: 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
     white-space: normal;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -328,21 +356,22 @@
         </div>
 
         <div class="form-group" style="margin-bottom: 0;">
-          <button
-            type="button"
-            class="form-input test-printer-btn"
-            style="
-              cursor: pointer;
-              font-weight: 700;
-              background: #eef6ff;
-              border: 1px solid #b7d4ff;
-              margin-bottom: 10px;
-            "
-          >
-            Test Connection
-          </button>
+          <div class="printer-actions">
+            <button
+              type="button"
+              class="form-input test-printer-btn"
+              style="
+                cursor: pointer;
+                font-weight: 700;
+                background: #eef6ff;
+                border: 1px solid #b7d4ff;
+              "
+            >
+              Test Connection
+            </button>
 
-          <div class="printer-test-result"></div>
+            <div class="printer-test-result"></div>
+          </div>
         </div>
       `
 

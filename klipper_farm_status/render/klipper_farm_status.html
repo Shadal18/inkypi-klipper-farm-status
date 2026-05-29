@@ -1,0 +1,104 @@
+{% extends "plugin.html" %} {% block content %}
+<div
+  class="screen"
+  style="color: {{ plugin_settings.text_color }}; background-color: {{ plugin_settings.background_color }};"
+>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">InkyPi • Klipper</div>
+      <div class="title">{{ title }}</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-chip printing">{{ printing }} printing</div>
+      <div class="stat-chip paused">{{ paused }} paused</div>
+      <div class="stat-chip offline">{{ offline }} offline</div>
+      <div class="stat-chip refresh">Updated {{ updated_label }}</div>
+    </div>
+  </div>
+
+  <div class="cards cards-{{ printers|length }}">
+    {% for printer in printers %}
+    <div class="card state-{{ printer.state_class }}">
+      <div class="card-top">
+        <div>
+          <div class="printer-name">{{ printer.name }}</div>
+          <div class="printer-state">{{ printer.status_label }}</div>
+        </div>
+
+        {% if show_progress %}
+        <div class="progress-ring">
+          <div class="progress-value">{{ printer.progress }}%</div>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if show_filename and printer.filename %}
+      <div class="filename">{{ printer.filename }}</div>
+      {% endif %}
+
+      <div class="grid">
+        {% if show_eta %}
+        <div class="cell">
+          <div class="cell-label">ETA</div>
+          <div class="cell-value">{{ printer.eta }}</div>
+        </div>
+        {% endif %} {% if show_layers %}
+        <div class="cell">
+          <div class="cell-label">Layers</div>
+          <div class="cell-value">
+            {% if printer.current_layer is not none and printer.total_layer is not none %} {{ printer.current_layer }} /
+            {{ printer.total_layer }} {% else %} — {% endif %}
+          </div>
+        </div>
+        {% endif %} {% if show_temps %}
+        <div class="cell">
+          <div class="cell-label">Nozzle</div>
+          <div class="cell-value">{{ printer.extruder_temp }}</div>
+        </div>
+
+        <div class="cell">
+          <div class="cell-label">Bed</div>
+          <div class="cell-value">{{ printer.bed_temp }}</div>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if show_spool %}
+      <div class="spool-row">
+        <div
+          class="spool-color"
+          {%
+          if
+          printer.spool_color
+          %}style="background: #{{ printer.spool_color | replace('#', '') }};"
+          {%
+          endif
+          %}
+        ></div>
+
+        <div class="spool-main">
+          <div class="spool-title">
+            {% if printer.spool_name %} {{ printer.spool_name }} {% elif printer.spool_id %} Spool #{{ printer.spool_id
+            }} {% else %} No active spool {% endif %}
+          </div>
+
+          <div class="spool-meta">
+            {% if show_spool_vendor and printer.spool_vendor %}
+            <span>{{ printer.spool_vendor }}</span>
+            {% endif %} {% if show_spool_material and printer.spool_material %}
+            <span>• {{ printer.spool_material }}</span>
+            {% endif %} {% if show_spool_remaining and printer.spool_remaining is not none and printer.spool_id %}
+            <span>• {{ printer.spool_remaining }}g</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endif %} {% if show_message and printer.message %}
+      <div class="message">{{ printer.message }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

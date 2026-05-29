@@ -1,0 +1,6 @@
+{
+  "display_name": "Klipper Farm Status",
+  "id": "klipper_farm_status",
+  "class": "KlipperFarmStatus",
+  "repository": "https://github.com/shadal18/inkypi-klipper-farm-status"
+}

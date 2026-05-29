@@ -88,12 +88,12 @@ body {
   min-height: 0;
 }
 
-.cards-1 {
-  grid-template-columns: 1fr;
-}
-
-.cards-2 {
-  grid-template-columns: 1fr 1fr;
+.cards {
+  flex: 1;
+  display: grid;
+  gap: 14px;
+  min-height: 0;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
 }
 
 .card {

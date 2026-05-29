@@ -205,13 +205,22 @@ class KlipperFarmStatus(BasePlugin):
         updated_label = datetime.now().strftime("%-I:%M %p")
 
         printers = []
-        for idx in [1, 2]:
-            enabled = to_bool(settings.get(f"printer_{idx}_enabled"), True)
+
+        raw_printers = settings.get("printers_json", "[]")
+        try:
+            configured_printers = json.loads(raw_printers)
+            if not isinstance(configured_printers, list):
+                configured_printers = []
+        except Exception:
+            configured_printers = []
+
+        for idx, printer_cfg in enumerate(configured_printers, start=1):
+            enabled = to_bool(printer_cfg.get("enabled"), True)
             if not enabled:
                 continue
 
-            name = (settings.get(f"printer_{idx}_name") or f"Printer {idx}").strip()
-            url = (settings.get(f"printer_{idx}_url") or "").strip()
+            name = (printer_cfg.get("name") or f"Printer {idx}").strip()
+            url = (printer_cfg.get("url") or "").strip()
             include_spool = to_bool(settings.get("show_spool"), True)
 
             if not url:

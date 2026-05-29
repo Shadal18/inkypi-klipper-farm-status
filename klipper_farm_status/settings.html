@@ -3,44 +3,34 @@
   <input type="text" id="title" name="title" placeholder="Klipper Farm" class="form-input" />
 </div>
 
-<hr style="border: 0; border-top: 1px solid rgba(0, 0, 0, 0.12); margin: 20px 0 18px" />
-
-<div class="form-group">
-  <label for="printer_1_name" class="form-label">Printer 1 Name:</label>
-  <input type="text" id="printer_1_name" name="printer_1_name" placeholder="K1 Max" class="form-input" />
-</div>
-
-<div class="form-group">
-  <label for="printer_1_url" class="form-label">Printer 1 Moonraker URL:</label>
-  <input type="text" id="printer_1_url" name="printer_1_url" placeholder="http://k1max.lan:7125" class="form-input" />
-</div>
-
-<div class="form-group">
-  <label for="printer_1_enabled" class="form-label">Enable Printer 1:</label>
-  <select id="printer_1_enabled" name="printer_1_enabled" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
+<input type="hidden" id="printers_json" name="printers_json" />
 
 <hr style="border: 0; border-top: 1px solid rgba(0, 0, 0, 0.12); margin: 20px 0 18px" />
 
 <div class="form-group">
-  <label for="printer_2_name" class="form-label">Printer 2 Name:</label>
-  <input type="text" id="printer_2_name" name="printer_2_name" placeholder="AD5X" class="form-input" />
-</div>
+  <div
+    style="
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #555;
+      margin-bottom: 10px;
+    "
+  >
+    Printers
+  </div>
 
-<div class="form-group">
-  <label for="printer_2_url" class="form-label">Printer 2 Moonraker URL:</label>
-  <input type="text" id="printer_2_url" name="printer_2_url" placeholder="http://ad5x.lan:7125" class="form-input" />
-</div>
+  <div id="printers_container" style="display: flex; flex-direction: column; gap: 14px"></div>
 
-<div class="form-group">
-  <label for="printer_2_enabled" class="form-label">Enable Printer 2:</label>
-  <select id="printer_2_enabled" name="printer_2_enabled" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
+  <button
+    type="button"
+    id="add_printer_btn"
+    class="form-input"
+    style="margin-top: 12px; cursor: pointer; font-weight: 700; background: #f8f9fa; border: 1px dashed #b9c0c7"
+  >
+    + Add Printer
+  </button>
 </div>
 
 <hr style="border: 0; border-top: 1px solid rgba(0, 0, 0, 0.12); margin: 20px 0 18px" />
@@ -164,6 +154,36 @@
 </div>
 
 <style>
+  .printer-card {
+    border: 1px solid #dcdfe3;
+    border-radius: 10px;
+    background: #f8f9fa;
+    padding: 14px;
+  }
+
+  .printer-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .printer-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #444;
+  }
+
+  .remove-printer-btn {
+    border: 0;
+    background: #dc3545;
+    color: #fff;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-weight: 700;
+  }
+
   .floatingchat-container-wrap,
   .floating-chat-kofi-popup-iframe {
     left: unset !important;
@@ -184,12 +204,6 @@
   document.addEventListener("DOMContentLoaded", () => {
     const defaults = {
       title: "Klipper Farm",
-      printer_1_name: "K1 Max",
-      printer_1_url: "http://k1max.lan:7125",
-      printer_1_enabled: "true",
-      printer_2_name: "AD5X",
-      printer_2_url: "http://ad5x.lan:7125",
-      printer_2_enabled: "true",
       show_progress: "true",
       show_filename: "true",
       show_eta: "true",
@@ -202,6 +216,89 @@
       show_message: "true",
     }
 
+    const printerDefaults = [
+      { name: "K1 Max", url: "http://k1max.lan:7125", enabled: true },
+      { name: "AD5X", url: "http://ad5x.lan:7125", enabled: true },
+    ]
+
+    const printersContainer = document.getElementById("printers_container")
+    const printersJsonInput = document.getElementById("printers_json")
+    const addPrinterBtn = document.getElementById("add_printer_btn")
+
+    function syncPrintersJson() {
+      const cards = printersContainer.querySelectorAll(".printer-card")
+      const printers = Array.from(cards).map((card) => ({
+        name: card.querySelector(".printer-name-input")?.value?.trim() || "",
+        url: card.querySelector(".printer-url-input")?.value?.trim() || "",
+        enabled: (card.querySelector(".printer-enabled-input")?.value || "true") === "true",
+      }))
+      printersJsonInput.value = JSON.stringify(printers)
+    }
+
+    function createPrinterCard(printer = {}, index = 0) {
+      const card = document.createElement("div")
+      card.className = "printer-card"
+
+      card.innerHTML = `
+        <div class="printer-card-header">
+          <div class="printer-card-title">Printer ${index + 1}</div>
+          <button type="button" class="remove-printer-btn">Remove</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Printer Name:</label>
+          <input
+            type="text"
+            class="form-input printer-name-input"
+            placeholder="K1 Max"
+            value="${printer.name || ""}"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Moonraker URL:</label>
+          <input
+            type="text"
+            class="form-input printer-url-input"
+            placeholder="http://printer.local:7125"
+            value="${printer.url || ""}"
+          />
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label">Enabled:</label>
+          <select class="form-input printer-enabled-input">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+      `
+
+      const enabledInput = card.querySelector(".printer-enabled-input")
+      enabledInput.value = printer.enabled === false ? "false" : "true"
+
+      card.querySelector(".remove-printer-btn").addEventListener("click", () => {
+        card.remove()
+        refreshPrinterTitles()
+        syncPrintersJson()
+      })
+
+      card.querySelectorAll("input, select").forEach((el) => {
+        el.addEventListener("input", syncPrintersJson)
+        el.addEventListener("change", syncPrintersJson)
+      })
+
+      printersContainer.appendChild(card)
+      syncPrintersJson()
+    }
+
+    function refreshPrinterTitles() {
+      printersContainer.querySelectorAll(".printer-card").forEach((card, index) => {
+        const title = card.querySelector(".printer-card-title")
+        if (title) title.textContent = `Printer ${index + 1}`
+      })
+    }
+
     Object.keys(defaults).forEach((key) => {
       const el = document.getElementById(key)
       if (!el) return
@@ -211,6 +308,33 @@
       } else {
         el.value = defaults[key]
       }
+    })
+
+    let printers = printerDefaults
+
+    if (typeof loadPluginSettings !== "undefined" && loadPluginSettings) {
+      if (pluginSettings.printers_json) {
+        try {
+          const parsed = JSON.parse(pluginSettings.printers_json)
+          if (Array.isArray(parsed) && parsed.length) {
+            printers = parsed
+          }
+        } catch (e) {}
+      }
+    }
+
+    printersContainer.innerHTML = ""
+    printers.forEach((printer, index) => createPrinterCard(printer, index))
+    refreshPrinterTitles()
+    syncPrintersJson()
+
+    addPrinterBtn.addEventListener("click", () => {
+      createPrinterCard(
+        { name: "", url: "", enabled: true },
+        printersContainer.querySelectorAll(".printer-card").length,
+      )
+      refreshPrinterTitles()
+      syncPrintersJson()
     })
 
     if (typeof kofiWidgetOverlay !== "undefined") {

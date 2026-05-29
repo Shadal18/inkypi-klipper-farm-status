@@ -21,7 +21,7 @@
     Printers
   </div>
 
-  <div id="printers_container" style="display: flex; flex-direction: column; gap: 14px"></div>
+  <div id="printers_container" style="display: flex; flex-direction: column; gap: 14px; min-width: 0"></div>
 
   <button
     type="button"
@@ -131,7 +131,7 @@
     Plugin Repository
   </div>
 
-  <div style="background: #f8f9fa; border: 1px solid #dcdfe3; border-radius: 10px; padding: 14px 16px">
+  <div style="background: #f8f9fa; border: 1px solid #dcdfe3; border-radius: 10px; padding: 14px 16px; min-width: 0">
     <a
       href="https://github.com/shadal18/inkypi-klipper-farm-status"
       target="_blank"
@@ -159,19 +159,27 @@
     border-radius: 10px;
     background: #f8f9fa;
     padding: 14px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .printer-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     margin-bottom: 12px;
+    min-width: 0;
   }
 
   .printer-card-title {
     font-size: 0.95rem;
     font-weight: 700;
     color: #444;
+    min-width: 0;
   }
 
   .remove-printer-btn {
@@ -182,6 +190,22 @@
     padding: 6px 10px;
     cursor: pointer;
     font-weight: 700;
+    flex: 0 0 auto;
+  }
+
+  .printer-test-result {
+    display: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .floatingchat-container-wrap,
@@ -242,6 +266,29 @@
       })
     }
 
+    function setTestResult(el, message, type = "neutral") {
+      el.style.display = "block"
+      el.textContent = message
+
+      if (type === "success") {
+        el.style.background = "#e7f6ea"
+        el.style.border = "1px solid #9ed0a8"
+        el.style.color = "#216a2f"
+      } else if (type === "error") {
+        el.style.background = "#fdecea"
+        el.style.border = "1px solid #efb1aa"
+        el.style.color = "#a12d24"
+      } else if (type === "warning") {
+        el.style.background = "#fff7e8"
+        el.style.border = "1px solid #f0cf8a"
+        el.style.color = "#8a6116"
+      } else {
+        el.style.background = "#f3f4f6"
+        el.style.border = "1px solid #d1d5db"
+        el.style.color = "#374151"
+      }
+    }
+
     function createPrinterCard(printer = {}, index = 0) {
       const card = document.createElement("div")
       card.className = "printer-card"
@@ -295,16 +342,7 @@
             Test Connection
           </button>
 
-          <div
-            class="printer-test-result"
-            style="
-              display: none;
-              padding: 10px 12px;
-              border-radius: 8px;
-              font-size: 0.92rem;
-              font-weight: 600;
-            "
-          ></div>
+          <div class="printer-test-result"></div>
         </div>
       `
 
@@ -326,34 +364,11 @@
       const testResult = card.querySelector(".printer-test-result")
       const urlInput = card.querySelector(".printer-url-input")
 
-      function setTestResult(message, type = "neutral") {
-        testResult.style.display = "block"
-        testResult.textContent = message
-
-        if (type === "success") {
-          testResult.style.background = "#e7f6ea"
-          testResult.style.border = "1px solid #9ed0a8"
-          testResult.style.color = "#216a2f"
-        } else if (type === "error") {
-          testResult.style.background = "#fdecea"
-          testResult.style.border = "1px solid #efb1aa"
-          testResult.style.color = "#a12d24"
-        } else if (type === "warning") {
-          testResult.style.background = "#fff7e8"
-          testResult.style.border = "1px solid #f0cf8a"
-          testResult.style.color = "#8a6116"
-        } else {
-          testResult.style.background = "#f3f4f6"
-          testResult.style.border = "1px solid #d1d5db"
-          testResult.style.color = "#374151"
-        }
-      }
-
       testBtn.addEventListener("click", async () => {
         const rawUrl = (urlInput.value || "").trim()
 
         if (!rawUrl) {
-          setTestResult("Enter a Moonraker URL first.", "warning")
+          setTestResult(testResult, "Enter a Moonraker URL first.", "warning")
           return
         }
 
@@ -362,7 +377,7 @@
           baseUrl = rawUrl.replace(/\/+$/, "")
           new URL(baseUrl)
         } catch (e) {
-          setTestResult("Invalid URL format.", "error")
+          setTestResult(testResult, "Invalid URL format.", "error")
           return
         }
 
@@ -370,22 +385,33 @@
 
         testBtn.disabled = true
         testBtn.textContent = "Testing..."
-        setTestResult("Checking Moonraker connection...", "neutral")
+        setTestResult(testResult, "Checking Moonraker connection...", "neutral")
 
         try {
+          const controller = new AbortController()
+          const timeout = setTimeout(() => controller.abort(), 6000)
+
           const response = await fetch(testUrl, {
             method: "GET",
-            headers: { Accept: "application/json" },
+            mode: "cors",
+            cache: "no-store",
+            signal: controller.signal,
+            headers: {
+              Accept: "application/json",
+            },
           })
+
+          clearTimeout(timeout)
 
           if (!response.ok) {
             if (response.status === 401 || response.status === 403) {
               setTestResult(
-                "Connected to host, but Moonraker denied access. Check authorization or trusted clients.",
+                testResult,
+                "Reached Moonraker, but access was denied. Check Moonraker auth or trusted clients.",
                 "warning",
               )
             } else {
-              setTestResult(`Moonraker responded with HTTP ${response.status}.`, "error")
+              setTestResult(testResult, `Moonraker responded with HTTP ${response.status}.`, "error")
             }
             return
           }
@@ -396,14 +422,20 @@
           const moonrakerVersion = result.moonraker_version || "unknown"
 
           setTestResult(
+            testResult,
             `Connected successfully. Klippy state: ${klippyState}. Moonraker: ${moonrakerVersion}.`,
             "success",
           )
         } catch (err) {
-          setTestResult(
-            "Could not reach Moonraker. Check the URL, port, host reachability, and browser/network access.",
-            "error",
-          )
+          if (err.name === "AbortError") {
+            setTestResult(testResult, "Connection timed out. Check host, port, and network reachability.", "error")
+          } else {
+            setTestResult(
+              testResult,
+              "The browser could not complete the request. This usually means CORS or Moonraker trusted-client blocking on a valid host, or a general network failure.",
+              "warning",
+            )
+          }
         } finally {
           testBtn.disabled = false
           testBtn.textContent = "Test Connection"

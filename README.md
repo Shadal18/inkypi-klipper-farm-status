@@ -1,13 +1,13 @@
-# InkyPi Crypto Price
+# InkyPi Klipper Farm Status
 
-An InkyPi plugin that shows a crypto price with a clean, glanceable layout and configurable symbol settings.
+An InkyPi plugin that shows the status of multiple Klipper printers with a clean, glanceable layout and configurable display options for Moonraker and Spoolman data.
 
 ## Install
 
 Use the InkyPi plugin installer with the plugin ID and this repository URL, following the install pattern shown by the official InkyPi plugin template.
 
 ```bash
-inkypi plugin install crypto_price https://github.com/shadal18/inkypi-crypto-price
+inkypi plugin install klipper_farm_status https://github.com/shadal18/inkypi-klipper-farm-status
 ```
 
 ## Update
@@ -17,14 +17,14 @@ To update the plugin on your InkyPi device:
 1. SSH into your InkyPi host.
 2. Change into the plugin directory:
    ```bash
-   cd ~/InkyPi/src/plugins/crypto_price
+   cd ~/InkyPi/src/plugins/klipper_farm_status
    ```
 3. Run this update command:
    ```bash
    git pull origin main && \
-   if [ -d crypto_price ]; then \
-     rsync -a crypto_price/ ./ && \
-     rm -rf crypto_price; \
+   if [ -d klipper_farm_status ]; then \
+     rsync -a klipper_farm_status/ ./ && \
+     rm -rf klipper_farm_status; \
    fi && \
    sudo systemctl restart inkypi.service
    ```
@@ -37,64 +37,91 @@ If you don’t see your changes after updating:
 
 ## Requirements
 
-- An API Ninjas account with a configured API key for crypto price requests.
-- A valid InkyPi environment key named `API_NINJAS_KEY`.
-- Network access from the InkyPi device to the API Ninjas API endpoint.
+- One or more reachable Moonraker instances for your Klipper printers.
+- Network access from the InkyPi device to each Moonraker host.
+- Optional Spoolman integration configured in Moonraker if you want active spool data displayed.
+- A working InkyPi installation with plugin support.
 
 ## Features
 
 This plugin is an extension for the InkyPi e-paper display frame and includes the following features.
 
-- Shows the current price for a configured crypto symbol pair such as `BTCUSD` or `BTCUSDT`.
-- Displays the base and quote symbols in a large, glanceable format.
-- Displays the latest returned timestamp from the API.
-- Supports common fiat and crypto quote pairs.
+- Shows the live status of multiple Klipper printers from Moonraker.
+- Displays printer state such as printing, paused, idle, complete, offline, or error.
+- Displays print progress percentage for each printer.
+- Displays the active filename when available.
+- Displays estimated remaining time when available.
+- Displays current and total layer counts when available.
+- Displays nozzle and bed temperatures.
+- Displays the currently active spool when Moonraker is linked to Spoolman.
+- Optionally displays spool brand, material, and remaining grams.
+- Includes per-printer enable or disable controls.
 - Clean layout optimized for quick glance reading on e-paper.
-- Simple settings with a configurable header text and symbol pair.
+- Uses InkyPi display dimensions and orientation handling for proper rendering.
 
 ## Settings
 
 The plugin settings page lets you customize:
 
 - Header text.
-- Crypto symbol pair.
+- Printer 1 name.
+- Printer 1 Moonraker URL.
+- Enable or disable Printer 1.
+- Printer 2 name.
+- Printer 2 Moonraker URL.
+- Enable or disable Printer 2.
+- Show or hide progress.
+- Show or hide filename.
+- Show or hide ETA.
+- Show or hide layers.
+- Show or hide temperatures.
+- Show or hide active spool.
+- Show or hide spool brand.
+- Show or hide spool material.
+- Show or hide spool remaining grams.
+- Show or hide status messages.
 
-## API Key Setup
+## Moonraker Data Used
 
-This plugin requires one API key from API Ninjas.
+This plugin reads printer information from Moonraker printer object queries and related endpoints.
 
-### Create the API key
+It can display values such as:
 
-1. Create or log into your API Ninjas account at [https://api-ninjas.com](https://api-ninjas.com).
-2. Open your API Ninjas dashboard.
-3. Generate or copy your API key for use with the [Crypto Price API](https://api-ninjas.com/api/cryptoprice).
+- Print state.
+- Current file.
+- Virtual SD progress.
+- Nozzle temperature.
+- Bed temperature.
+- Print duration.
+- Estimated remaining time.
+- Current and total layers when present.
+- Active spool ID through Moonraker’s Spoolman integration.
 
-### Add the key in InkyPi
+Layer counts may not always be available, depending on slicer metadata and printer configuration.
 
-1. Open the InkyPi front page.
-2. Click the **key icon**.
-3. Add a new key named `API_NINJAS_KEY`.
-4. Paste in your API Ninjas API key.
-5. Save it.
-6. Restart InkyPi if needed.
+## Spoolman Support
 
-## API Endpoint Used
+If your Moonraker instance is configured with Spoolman support, the plugin can also display the currently active spool for each printer.
 
-This plugin currently reads data from the following API Ninjas endpoint:
+That can include:
 
-- `/v1/cryptoprice`
+- Spool name.
+- Vendor or brand.
+- Material.
+- Remaining grams.
+- Color swatch when available.
 
-This endpoint returns the current price and current UNIX timestamp for a cryptocurrency symbol pair, and fiat-quoted pairs require the appropriate API plan level.
+If Spoolman is not configured, the rest of the printer status display will still work normally.
 
 ## Repository
 
 GitHub repository:
 
-[https://github.com/shadal18/inkypi-crypto-price](https://github.com/shadal18/inkypi-crypto-price)
+[https://github.com/shadal18/inkypi-klipper-farm-status](https://github.com/shadal18/inkypi-klipper-farm-status)
 
 ## Screenshots
 
-- Main plugin display showing crypto price data.
+- Main plugin display showing printer farm status.
 - Plugin settings screen.
 
 <p align="center">

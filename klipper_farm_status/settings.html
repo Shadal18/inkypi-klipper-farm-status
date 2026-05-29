@@ -206,36 +206,6 @@
     white-space: nowrap;
   }
 
-  .printer-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    min-width: 0;
-  }
-
-  .test-printer-btn {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  .printer-test-result {
-    display: none;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-width: 0;
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-size: 0.92rem;
-    font-weight: 600;
-    line-height: 1.35;
-    white-space: normal;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
   .floatingchat-container-wrap,
   .floating-chat-kofi-popup-iframe {
     left: unset !important;
@@ -294,29 +264,6 @@
       })
     }
 
-    function setTestResult(el, message, type = "neutral") {
-      el.style.display = "block"
-      el.textContent = message
-
-      if (type === "success") {
-        el.style.background = "#e7f6ea"
-        el.style.border = "1px solid #9ed0a8"
-        el.style.color = "#216a2f"
-      } else if (type === "error") {
-        el.style.background = "#fdecea"
-        el.style.border = "1px solid #efb1aa"
-        el.style.color = "#a12d24"
-      } else if (type === "warning") {
-        el.style.background = "#fff7e8"
-        el.style.border = "1px solid #f0cf8a"
-        el.style.color = "#8a6116"
-      } else {
-        el.style.background = "#f3f4f6"
-        el.style.border = "1px solid #d1d5db"
-        el.style.color = "#374151"
-      }
-    }
-
     function createPrinterCard(printer = {}, index = 0) {
       const card = document.createElement("div")
       card.className = "printer-card"
@@ -347,31 +294,12 @@
           />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" style="margin-bottom: 0;">
           <label class="form-label">Enabled:</label>
           <select class="form-input printer-enabled-input">
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
-        </div>
-
-        <div class="form-group" style="margin-bottom: 0;">
-          <div class="printer-actions">
-            <button
-              type="button"
-              class="form-input test-printer-btn"
-              style="
-                cursor: pointer;
-                font-weight: 700;
-                background: #eef6ff;
-                border: 1px solid #b7d4ff;
-              "
-            >
-              Test Connection
-            </button>
-
-            <div class="printer-test-result"></div>
-          </div>
         </div>
       `
 
@@ -387,88 +315,6 @@
       card.querySelectorAll("input, select").forEach((el) => {
         el.addEventListener("input", syncPrintersJson)
         el.addEventListener("change", syncPrintersJson)
-      })
-
-      const testBtn = card.querySelector(".test-printer-btn")
-      const testResult = card.querySelector(".printer-test-result")
-      const urlInput = card.querySelector(".printer-url-input")
-
-      testBtn.addEventListener("click", async () => {
-        const rawUrl = (urlInput.value || "").trim()
-
-        if (!rawUrl) {
-          setTestResult(testResult, "Enter a Moonraker URL first.", "warning")
-          return
-        }
-
-        let baseUrl
-        try {
-          baseUrl = rawUrl.replace(/\/+$/, "")
-          new URL(baseUrl)
-        } catch (e) {
-          setTestResult(testResult, "Invalid URL format.", "error")
-          return
-        }
-
-        const testUrl = `${baseUrl}/server/info`
-
-        testBtn.disabled = true
-        testBtn.textContent = "Testing..."
-        setTestResult(testResult, "Checking Moonraker connection...", "neutral")
-
-        try {
-          const controller = new AbortController()
-          const timeout = setTimeout(() => controller.abort(), 6000)
-
-          const response = await fetch(testUrl, {
-            method: "GET",
-            mode: "cors",
-            cache: "no-store",
-            signal: controller.signal,
-            headers: {
-              Accept: "application/json",
-            },
-          })
-
-          clearTimeout(timeout)
-
-          if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
-              setTestResult(
-                testResult,
-                "Reached Moonraker, but access was denied. Check Moonraker auth or trusted clients.",
-                "warning",
-              )
-            } else {
-              setTestResult(testResult, `Moonraker responded with HTTP ${response.status}.`, "error")
-            }
-            return
-          }
-
-          const data = await response.json()
-          const result = data.result || {}
-          const klippyState = result.klippy_state || "unknown"
-          const moonrakerVersion = result.moonraker_version || "unknown"
-
-          setTestResult(
-            testResult,
-            `Connected successfully. Klippy state: ${klippyState}. Moonraker: ${moonrakerVersion}.`,
-            "success",
-          )
-        } catch (err) {
-          if (err.name === "AbortError") {
-            setTestResult(testResult, "Connection timed out. Check host, port, and network reachability.", "error")
-          } else {
-            setTestResult(
-              testResult,
-              "The browser could not complete the request. This usually means CORS or Moonraker trusted-client blocking on a valid host, or a general network failure.",
-              "warning",
-            )
-          }
-        } finally {
-          testBtn.disabled = false
-          testBtn.textContent = "Test Connection"
-        }
       })
 
       printersContainer.appendChild(card)

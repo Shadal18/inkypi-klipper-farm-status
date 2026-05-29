@@ -235,6 +235,13 @@
       printersJsonInput.value = JSON.stringify(printers)
     }
 
+    function refreshPrinterTitles() {
+      printersContainer.querySelectorAll(".printer-card").forEach((card, index) => {
+        const title = card.querySelector(".printer-card-title")
+        if (title) title.textContent = `Printer ${index + 1}`
+      })
+    }
+
     function createPrinterCard(printer = {}, index = 0) {
       const card = document.createElement("div")
       card.className = "printer-card"
@@ -265,12 +272,39 @@
           />
         </div>
 
-        <div class="form-group" style="margin-bottom: 0;">
+        <div class="form-group">
           <label class="form-label">Enabled:</label>
           <select class="form-input printer-enabled-input">
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <button
+            type="button"
+            class="form-input test-printer-btn"
+            style="
+              cursor: pointer;
+              font-weight: 700;
+              background: #eef6ff;
+              border: 1px solid #b7d4ff;
+              margin-bottom: 10px;
+            "
+          >
+            Test Connection
+          </button>
+
+          <div
+            class="printer-test-result"
+            style="
+              display: none;
+              padding: 10px 12px;
+              border-radius: 8px;
+              font-size: 0.92rem;
+              font-weight: 600;
+            "
+          ></div>
         </div>
       `
 
@@ -288,15 +322,96 @@
         el.addEventListener("change", syncPrintersJson)
       })
 
+      const testBtn = card.querySelector(".test-printer-btn")
+      const testResult = card.querySelector(".printer-test-result")
+      const urlInput = card.querySelector(".printer-url-input")
+
+      function setTestResult(message, type = "neutral") {
+        testResult.style.display = "block"
+        testResult.textContent = message
+
+        if (type === "success") {
+          testResult.style.background = "#e7f6ea"
+          testResult.style.border = "1px solid #9ed0a8"
+          testResult.style.color = "#216a2f"
+        } else if (type === "error") {
+          testResult.style.background = "#fdecea"
+          testResult.style.border = "1px solid #efb1aa"
+          testResult.style.color = "#a12d24"
+        } else if (type === "warning") {
+          testResult.style.background = "#fff7e8"
+          testResult.style.border = "1px solid #f0cf8a"
+          testResult.style.color = "#8a6116"
+        } else {
+          testResult.style.background = "#f3f4f6"
+          testResult.style.border = "1px solid #d1d5db"
+          testResult.style.color = "#374151"
+        }
+      }
+
+      testBtn.addEventListener("click", async () => {
+        const rawUrl = (urlInput.value || "").trim()
+
+        if (!rawUrl) {
+          setTestResult("Enter a Moonraker URL first.", "warning")
+          return
+        }
+
+        let baseUrl
+        try {
+          baseUrl = rawUrl.replace(/\/+$/, "")
+          new URL(baseUrl)
+        } catch (e) {
+          setTestResult("Invalid URL format.", "error")
+          return
+        }
+
+        const testUrl = `${baseUrl}/server/info`
+
+        testBtn.disabled = true
+        testBtn.textContent = "Testing..."
+        setTestResult("Checking Moonraker connection...", "neutral")
+
+        try {
+          const response = await fetch(testUrl, {
+            method: "GET",
+            headers: { Accept: "application/json" },
+          })
+
+          if (!response.ok) {
+            if (response.status === 401 || response.status === 403) {
+              setTestResult(
+                "Connected to host, but Moonraker denied access. Check authorization or trusted clients.",
+                "warning",
+              )
+            } else {
+              setTestResult(`Moonraker responded with HTTP ${response.status}.`, "error")
+            }
+            return
+          }
+
+          const data = await response.json()
+          const result = data.result || {}
+          const klippyState = result.klippy_state || "unknown"
+          const moonrakerVersion = result.moonraker_version || "unknown"
+
+          setTestResult(
+            `Connected successfully. Klippy state: ${klippyState}. Moonraker: ${moonrakerVersion}.`,
+            "success",
+          )
+        } catch (err) {
+          setTestResult(
+            "Could not reach Moonraker. Check the URL, port, host reachability, and browser/network access.",
+            "error",
+          )
+        } finally {
+          testBtn.disabled = false
+          testBtn.textContent = "Test Connection"
+        }
+      })
+
       printersContainer.appendChild(card)
       syncPrintersJson()
-    }
-
-    function refreshPrinterTitles() {
-      printersContainer.querySelectorAll(".printer-card").forEach((card, index) => {
-        const title = card.querySelector(".printer-card-title")
-        if (title) title.textContent = `Printer ${index + 1}`
-      })
     }
 
     Object.keys(defaults).forEach((key) => {

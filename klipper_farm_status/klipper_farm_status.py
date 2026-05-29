@@ -1,7 +1,7 @@
 from plugins.base_plugin.base_plugin import BasePlugin
 from datetime import datetime
 import requests
-import math
+import json
 
 
 def to_bool(value, default=False):
@@ -47,13 +47,6 @@ def format_temp(current, target):
     if t > 0:
         return f"{round(c)}° / {round(t)}°"
     return f"{round(c)}°"
-
-
-def ellipsize(text, max_len=34):
-    text = (text or "").strip()
-    if len(text) <= max_len:
-        return text
-    return text[: max_len - 1].rstrip() + "…"
 
 
 class KlipperFarmStatus(BasePlugin):
@@ -109,9 +102,11 @@ class KlipperFarmStatus(BasePlugin):
 
             raw_state = (
                 print_stats.get("state")
+                or webhooks.get("state")
                 or webhooks.get("state_message")
                 or "standby"
-            ).strip().lower()
+            )
+            raw_state = str(raw_state).strip().lower()
 
             printer["connected"] = True
 
@@ -148,12 +143,16 @@ class KlipperFarmStatus(BasePlugin):
             else:
                 printer["eta"] = "—"
 
-            current_layer = print_stats.get("info", {}).get("current_layer")
-            total_layer = print_stats.get("info", {}).get("total_layer")
+            current_layer = None
+            total_layer = None
 
-            if current_layer is None:
+            if isinstance(print_stats.get("info"), dict):
+                current_layer = print_stats.get("info", {}).get("current_layer")
+                total_layer = print_stats.get("info", {}).get("total_layer")
+
+            if current_layer is None and isinstance(display_status.get("info"), dict):
                 current_layer = display_status.get("info", {}).get("current_layer")
-            if total_layer is None:
+            if total_layer is None and isinstance(display_status.get("info"), dict):
                 total_layer = display_status.get("info", {}).get("total_layer")
 
             printer["current_layer"] = current_layer
@@ -204,8 +203,6 @@ class KlipperFarmStatus(BasePlugin):
         title = (settings.get("title") or "Klipper Farm").strip()
         updated_label = datetime.now().strftime("%-I:%M %p")
 
-        printers = []
-
         raw_printers = settings.get("printers_json", "[]")
         try:
             configured_printers = json.loads(raw_printers)
@@ -213,6 +210,14 @@ class KlipperFarmStatus(BasePlugin):
                 configured_printers = []
         except Exception:
             configured_printers = []
+
+        if not configured_printers:
+            configured_printers = [
+                {"name": "K1 Max", "url": "http://k1max.lan:7125", "enabled": True},
+                {"name": "AD5X", "url": "http://ad5x.lan:7125", "enabled": True},
+            ]
+
+        printers = []
 
         for idx, printer_cfg in enumerate(configured_printers, start=1):
             enabled = to_bool(printer_cfg.get("enabled"), True)

@@ -49,7 +49,7 @@ body {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 8px;
-  max-width: 52%;
+  max-width: 55%;
 }
 
 .stat-chip {
@@ -79,13 +79,6 @@ body {
 .stat-chip.refresh {
   background: rgba(0, 0, 0, 0.08);
   color: inherit;
-}
-
-.cards {
-  flex: 1;
-  display: grid;
-  gap: 14px;
-  min-height: 0;
 }
 
 .cards {
@@ -252,6 +245,7 @@ body {
   font-size: 13px;
   line-height: 1.2;
   opacity: 0.72;
+  word-break: break-word;
 }
 
 @media (max-width: 900px) {
@@ -264,8 +258,7 @@ body {
     justify-content: flex-start;
   }
 
-  .cards,
-  .cards-2 {
+  .cards {
     grid-template-columns: 1fr;
   }
 }

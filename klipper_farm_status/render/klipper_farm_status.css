@@ -14,10 +14,10 @@ body {
   width: 100vw;
   height: 100vh;
   box-sizing: border-box;
-  padding: 14px 14px 12px;
+  padding: 12px 14px 12px;
   display: grid;
   grid-template-rows: auto 1fr;
-  gap: 12px;
+  gap: 10px;
   color: inherit;
   background-color: inherit;
   overflow: hidden;
@@ -26,28 +26,21 @@ body {
 .topbar {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   min-width: 0;
 }
 
 .topbar-left {
   min-width: 0;
-}
-
-.eyebrow {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  opacity: 0.68;
-  margin-bottom: 4px;
-  font-weight: 700;
+  flex: 1 1 auto;
 }
 
 .title {
   font-size: 28px;
   line-height: 1;
   font-weight: 800;
+  margin: 0;
 }
 
 .topbar-right {
@@ -55,7 +48,7 @@ body {
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: 6px;
-  max-width: 55%;
+  max-width: 58%;
 }
 
 .summary-chip {
@@ -91,7 +84,7 @@ body {
   min-height: 0;
   display: grid;
   gap: 10px;
-  align-content: start;
+  align-content: stretch;
   grid-auto-rows: minmax(0, 1fr);
 }
 
@@ -109,10 +102,7 @@ body {
 }
 
 .cards-count-5,
-.cards-count-6 {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
+.cards-count-6,
 .cards-count-7,
 .cards-count-8,
 .cards-count-9,
@@ -306,7 +296,6 @@ body {
   word-break: break-word;
 }
 
-/* Denser mode for 5+ printers */
 .cards-count-5 .card,
 .cards-count-6 .card,
 .cards-count-7 .card,
@@ -388,6 +377,7 @@ body {
 @media (max-width: 900px) {
   .topbar {
     flex-direction: column;
+    align-items: flex-start;
   }
 
   .topbar-right {

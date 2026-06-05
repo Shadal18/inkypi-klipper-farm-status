@@ -2,6 +2,8 @@
 
 An InkyPi plugin that shows the status of multiple Klipper printers with a clean, glanceable layout and configurable display options for Moonraker and Spoolman data.
 
+_Klipper Farm Status_ is a plugin for [InkyPi](https://github.com/fatihak/InkyPi) that surfaces the live state of your Klipper printer farm directly on your Inky display.
+
 ## Install
 
 Use the InkyPi plugin installer with the plugin ID and this repository URL, following the install pattern shown by the official InkyPi plugin template.

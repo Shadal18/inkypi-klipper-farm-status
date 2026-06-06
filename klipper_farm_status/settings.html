@@ -198,9 +198,7 @@
   }
 
   .kf-input,
-  .kf-select,
-  .klipper-farm-settings input[type="text"],
-  .klipper-farm-settings select {
+  .klipper-farm-settings input[type="text"] {
     width: 100%;
     min-height: 46px;
     padding: 0 14px;
@@ -220,9 +218,7 @@
   }
 
   .kf-input:focus,
-  .kf-select:focus,
-  .klipper-farm-settings input:focus,
-  .klipper-farm-settings select:focus {
+  .klipper-farm-settings input:focus {
     border-color: color-mix(in srgb, var(--kf-primary) 45%, transparent);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--kf-primary) 14%, transparent);
   }
@@ -321,18 +317,64 @@
     box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
   }
 
+  .kf-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .kf-toggle-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .kf-toggle-control {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  .klipper-farm-settings input[type="checkbox"],
+  .kf-toggle-card input[type="checkbox"],
+  .toggle-checkbox {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: static !important;
+    pointer-events: auto !important;
+    width: 18px !important;
+    height: 18px !important;
+    margin: 0 !important;
+    accent-color: var(--kf-primary);
+    cursor: pointer !important;
+    box-shadow: none !important;
+    min-height: 18px !important;
+    padding: 0 !important;
+    border: initial !important;
+    background: initial !important;
+  }
+
   .kf-toggle-title {
     color: var(--kf-text);
     font-size: 14px;
     font-weight: 700;
-    margin: 0 0 8px;
+    margin: 0 0 4px;
   }
 
   .kf-toggle-copy {
     color: var(--kf-text-muted);
     font-size: 12px;
     line-height: 1.5;
-    margin: 0 0 10px;
+    margin: 0;
   }
 
   .kf-link-card {
@@ -477,93 +519,133 @@
       <div class="kf-section-body">
         <div class="kf-toggle-grid">
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Progress</div>
-            <div class="kf-toggle-copy">Display each printer’s current progress percentage.</div>
-            <select id="show_progress" name="show_progress" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Progress</div>
+                <div class="kf-toggle-copy">Display each printer’s current progress percentage.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_progress_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_progress" name="show_progress" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show File Name</div>
-            <div class="kf-toggle-copy">Display the current file name for active jobs.</div>
-            <select id="show_filename" name="show_filename" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show File Name</div>
+                <div class="kf-toggle-copy">Display the current file name for active jobs.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_filename_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_filename" name="show_filename" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show ETA</div>
-            <div class="kf-toggle-copy">Display estimated remaining print time.</div>
-            <select id="show_eta" name="show_eta" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show ETA</div>
+                <div class="kf-toggle-copy">Display estimated remaining print time.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_eta_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_eta" name="show_eta" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Layers</div>
-            <div class="kf-toggle-copy">Display current and total print layers when available.</div>
-            <select id="show_layers" name="show_layers" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Layers</div>
+                <div class="kf-toggle-copy">Display current and total print layers when available.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_layers_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_layers" name="show_layers" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Temperatures</div>
-            <div class="kf-toggle-copy">Display hotend and bed temperatures.</div>
-            <select id="show_temps" name="show_temps" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Temperatures</div>
+                <div class="kf-toggle-copy">Display hotend and bed temperatures.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_temps_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_temps" name="show_temps" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Active Spool</div>
-            <div class="kf-toggle-copy">Display the spool currently assigned to the printer.</div>
-            <select id="show_spool" name="show_spool" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Active Spool</div>
+                <div class="kf-toggle-copy">Display the spool currently assigned to the printer.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_spool" name="show_spool" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Spool Brand</div>
-            <div class="kf-toggle-copy">Display spool vendor or brand information.</div>
-            <select id="show_spool_vendor" name="show_spool_vendor" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Spool Brand</div>
+                <div class="kf-toggle-copy">Display spool vendor or brand information.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_vendor_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_spool_vendor" name="show_spool_vendor" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Spool Material</div>
-            <div class="kf-toggle-copy">Display filament material for the active spool.</div>
-            <select id="show_spool_material" name="show_spool_material" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Spool Material</div>
+                <div class="kf-toggle-copy">Display filament material for the active spool.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_material_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_spool_material" name="show_spool_material" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Spool Remaining</div>
-            <div class="kf-toggle-copy">Display remaining spool weight if available.</div>
-            <select id="show_spool_remaining" name="show_spool_remaining" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Spool Remaining</div>
+                <div class="kf-toggle-copy">Display remaining spool weight if available.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_remaining_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_spool_remaining" name="show_spool_remaining" value="true" />
           </div>
 
           <div class="kf-toggle-card">
-            <div class="kf-toggle-title">Show Status Message</div>
-            <div class="kf-toggle-copy">Display Moonraker state or status messages.</div>
-            <select id="show_message" name="show_message" class="kf-select">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Status Message</div>
+                <div class="kf-toggle-copy">Display Moonraker state or status messages.</div>
+              </div>
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_message_toggle" class="toggle-checkbox" />
+              </div>
+            </div>
+            <input type="hidden" id="show_message" name="show_message" value="true" />
           </div>
         </div>
       </div>
@@ -603,6 +685,32 @@
     const printersContainer = document.getElementById("printers_container")
     const printersJsonInput = document.getElementById("printers_json")
     const addPrinterBtn = document.getElementById("add_printer_btn")
+
+    function initBooleanToggle(settingName, defaultValue = "true") {
+      const hiddenInput = document.getElementById(settingName)
+      const toggle = document.getElementById(settingName + "_toggle")
+
+      if (!hiddenInput || !toggle) return
+
+      let currentValue = defaultValue
+      if (
+        typeof loadPluginSettings !== "undefined" &&
+        loadPluginSettings &&
+        typeof pluginSettings !== "undefined" &&
+        pluginSettings &&
+        pluginSettings[settingName] !== undefined
+      ) {
+        currentValue = String(pluginSettings[settingName]).trim().toLowerCase()
+      }
+
+      const isEnabled = currentValue === "true"
+      hiddenInput.value = isEnabled ? "true" : "false"
+      toggle.checked = isEnabled
+
+      toggle.addEventListener("change", () => {
+        hiddenInput.value = toggle.checked ? "true" : "false"
+      })
+    }
 
     function syncPrintersJson() {
       const cards = printersContainer.querySelectorAll(".kf-printer-card")
@@ -654,7 +762,7 @@
 
           <div class="kf-field">
             <label class="kf-label">Enabled</label>
-            <select class="kf-select printer-enabled-input">
+            <select class="kf-input printer-enabled-input">
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
@@ -680,24 +788,19 @@
       syncPrintersJson()
     }
 
-    Object.keys(defaults).forEach((key) => {
-      const el = document.getElementById(key)
-      if (!el) return
-
-      if (
-        typeof loadPluginSettings !== "undefined" &&
-        loadPluginSettings &&
-        typeof pluginSettings !== "undefined" &&
-        pluginSettings
-      ) {
-        el.value = pluginSettings[key] || defaults[key]
-      } else {
-        el.value = defaults[key]
-      }
-    })
+    const titleInput = document.getElementById("title")
+    if (
+      typeof loadPluginSettings !== "undefined" &&
+      loadPluginSettings &&
+      typeof pluginSettings !== "undefined" &&
+      pluginSettings
+    ) {
+      if (titleInput) titleInput.value = pluginSettings.title || defaults.title
+    } else {
+      if (titleInput) titleInput.value = defaults.title
+    }
 
     let printers = printerDefaults
-
     if (
       typeof loadPluginSettings !== "undefined" &&
       loadPluginSettings &&
@@ -727,6 +830,17 @@
       refreshPrinterTitles()
       syncPrintersJson()
     })
+
+    initBooleanToggle("show_progress", "true")
+    initBooleanToggle("show_filename", "true")
+    initBooleanToggle("show_eta", "true")
+    initBooleanToggle("show_layers", "true")
+    initBooleanToggle("show_temps", "true")
+    initBooleanToggle("show_spool", "true")
+    initBooleanToggle("show_spool_vendor", "true")
+    initBooleanToggle("show_spool_material", "true")
+    initBooleanToggle("show_spool_remaining", "true")
+    initBooleanToggle("show_message", "true")
 
     if (typeof kofiWidgetOverlay !== "undefined") {
       kofiWidgetOverlay.draw("shadal", {

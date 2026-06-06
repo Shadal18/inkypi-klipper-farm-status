@@ -319,9 +319,20 @@
 
   .kf-toggle-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 12px;
+  }
+
+  .kf-toggle-control {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    min-height: 24px;
+    padding-top: 2px;
+    order: 0;
   }
 
   .kf-toggle-text {
@@ -329,15 +340,7 @@
     flex-direction: column;
     gap: 2px;
     min-width: 0;
-  }
-
-  .kf-toggle-control {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    min-height: 24px;
+    order: 1;
   }
 
   .klipper-farm-settings input[type="checkbox"],
@@ -520,12 +523,12 @@
         <div class="kf-toggle-grid">
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_progress_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Progress</div>
                 <div class="kf-toggle-copy">Display each printer’s current progress percentage.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_progress_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_progress" name="show_progress" value="true" />
@@ -533,12 +536,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_filename_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show File Name</div>
                 <div class="kf-toggle-copy">Display the current file name for active jobs.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_filename_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_filename" name="show_filename" value="true" />
@@ -546,12 +549,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_eta_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show ETA</div>
                 <div class="kf-toggle-copy">Display estimated remaining print time.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_eta_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_eta" name="show_eta" value="true" />
@@ -559,12 +562,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_layers_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Layers</div>
                 <div class="kf-toggle-copy">Display current and total print layers when available.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_layers_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_layers" name="show_layers" value="true" />
@@ -572,12 +575,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_temps_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Temperatures</div>
                 <div class="kf-toggle-copy">Display hotend and bed temperatures.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_temps_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_temps" name="show_temps" value="true" />
@@ -585,12 +588,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Active Spool</div>
                 <div class="kf-toggle-copy">Display the spool currently assigned to the printer.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_spool" name="show_spool" value="true" />
@@ -598,12 +601,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_vendor_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Spool Brand</div>
                 <div class="kf-toggle-copy">Display spool vendor or brand information.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_vendor_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_spool_vendor" name="show_spool_vendor" value="true" />
@@ -611,12 +614,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_material_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Spool Material</div>
                 <div class="kf-toggle-copy">Display filament material for the active spool.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_material_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_spool_material" name="show_spool_material" value="true" />
@@ -624,12 +627,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_spool_remaining_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Spool Remaining</div>
                 <div class="kf-toggle-copy">Display remaining spool weight if available.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_remaining_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_spool_remaining" name="show_spool_remaining" value="true" />
@@ -637,12 +640,12 @@
 
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_message_toggle" class="toggle-checkbox" />
+              </div>
               <div class="kf-toggle-text">
                 <div class="kf-toggle-title">Show Status Message</div>
                 <div class="kf-toggle-copy">Display Moonraker state or status messages.</div>
-              </div>
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_message_toggle" class="toggle-checkbox" />
               </div>
             </div>
             <input type="hidden" id="show_message" name="show_message" value="true" />

@@ -1,160 +1,240 @@
-<div class="form-group">
-  <label for="title" class="form-label">Header Text:</label>
-  <input type="text" id="title" name="title" placeholder="Klipper Farm" class="form-input" />
-</div>
-
-<input type="hidden" id="printers_json" name="printers_json" />
-
-<hr style="border: 0; border-top: 1px solid rgba(0, 0, 0, 0.12); margin: 20px 0 18px" />
-
-<div class="form-group">
-  <div
-    style="
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #555;
-      margin-bottom: 10px;
-    "
-  >
-    Printers
-  </div>
-
-  <div id="printers_container" class="printers-container"></div>
-
-  <button
-    type="button"
-    id="add_printer_btn"
-    class="form-input"
-    style="margin-top: 12px; cursor: pointer; font-weight: 700; background: #f8f9fa; border: 1px dashed #b9c0c7"
-  >
-    + Add Printer
-  </button>
-</div>
-
-<hr style="border: 0; border-top: 1px solid rgba(0, 0, 0, 0.12); margin: 20px 0 18px" />
-
-<div class="form-group">
-  <label for="show_progress" class="form-label">Show Progress:</label>
-  <select id="show_progress" name="show_progress" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_filename" class="form-label">Show File Name:</label>
-  <select id="show_filename" name="show_filename" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_eta" class="form-label">Show ETA:</label>
-  <select id="show_eta" name="show_eta" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_layers" class="form-label">Show Layers:</label>
-  <select id="show_layers" name="show_layers" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_temps" class="form-label">Show Temperatures:</label>
-  <select id="show_temps" name="show_temps" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_spool" class="form-label">Show Active Spool:</label>
-  <select id="show_spool" name="show_spool" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_spool_vendor" class="form-label">Show Spool Brand:</label>
-  <select id="show_spool_vendor" name="show_spool_vendor" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_spool_material" class="form-label">Show Spool Material:</label>
-  <select id="show_spool_material" name="show_spool_material" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_spool_remaining" class="form-label">Show Spool Remaining:</label>
-  <select id="show_spool_remaining" name="show_spool_remaining" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="show_message" class="form-label">Show Status Message:</label>
-  <select id="show_message" name="show_message" class="form-input">
-    <option value="true">Yes</option>
-    <option value="false">No</option>
-  </select>
-</div>
-
-<hr style="border: 0; border-top: 1px solid rgba(0, 0, 0, 0.12); margin: 24px 0 18px" />
-
-<div class="form-group" style="margin-bottom: 20px">
-  <div
-    style="
-      font-size: 0.95rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #555;
-      margin-bottom: 10px;
-    "
-  >
-    Plugin Repository
-  </div>
-
-  <div style="background: #f8f9fa; border: 1px solid #dcdfe3; border-radius: 10px; padding: 14px 16px; min-width: 0">
-    <a
-      href="https://github.com/shadal18/inkypi-klipper-farm-status"
-      target="_blank"
-      rel="noopener noreferrer"
-      style="
-        color: #0d6efd;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 1rem;
-        word-break: break-word;
-        display: inline-block;
-        margin-bottom: 6px;
-      "
-    >
-      github.com/shadal18/inkypi-klipper-farm-status
-    </a>
-
-    <div style="font-size: 0.9rem; color: #666">Setup help, updates, release notes, and source code.</div>
-  </div>
-</div>
-
 <style>
-  .printers-container {
+  :root {
+    --kf-bg: var(--background-color, var(--color-background, #f5f7fb));
+    --kf-bg-soft: var(--card-background-secondary, var(--color-surface-2, #eef2f7));
+    --kf-panel: var(--card-background, var(--color-surface, #ffffff));
+    --kf-panel-2: var(--card-background-hover, var(--color-surface-2, #f8fafc));
+    --kf-border: var(--border-color, rgba(15, 23, 42, 0.12));
+    --kf-text: var(--text-primary, var(--color-text, #0f172a));
+    --kf-text-muted: var(--text-secondary, var(--color-text-secondary, #475569));
+    --kf-text-soft: var(--text-muted, #64748b);
+    --kf-primary: var(--accent-color, #14b8a6);
+    --kf-info: var(--info-color, #3b82f6);
+    --kf-shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --kf-radius-xl: 18px;
+    --kf-radius-lg: 14px;
+  }
+
+  html.dark,
+  body.dark,
+  [data-theme="dark"],
+  html[data-theme="dark"] {
+    --kf-bg: var(--background-color, var(--color-background, #0f172a));
+    --kf-bg-soft: var(--card-background-secondary, var(--color-surface-2, #162033));
+    --kf-panel: var(--card-background, var(--color-surface, #111827));
+    --kf-panel-2: var(--card-background-hover, var(--color-surface-2, #172033));
+    --kf-border: var(--border-color, rgba(255, 255, 255, 0.1));
+    --kf-text: var(--text-primary, var(--color-text, #f8fafc));
+    --kf-text-muted: var(--text-secondary, var(--color-text-secondary, #cbd5e1));
+    --kf-text-soft: var(--text-muted, #94a3b8);
+    --kf-shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.22);
+  }
+
+  .klipper-farm-settings {
+    width: 100%;
+    box-sizing: border-box;
+    color: var(--kf-text);
+  }
+
+  .kf-shell {
+    display: grid;
+    gap: 18px;
+    margin-top: 8px;
+  }
+
+  .kf-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--kf-radius-xl);
+    border: 1px solid var(--kf-border);
+    background:
+      radial-gradient(circle at top right, color-mix(in srgb, var(--kf-primary) 16%, transparent), transparent 34%),
+      radial-gradient(circle at bottom left, color-mix(in srgb, var(--kf-info) 12%, transparent), transparent 30%),
+      linear-gradient(180deg, color-mix(in srgb, var(--kf-panel) 92%, var(--kf-bg-soft) 8%), var(--kf-panel-2));
+    box-shadow: var(--kf-shadow-sm);
+    padding: 22px 22px 18px;
+  }
+
+  .kf-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--kf-primary) 14%, transparent);
+    color: var(--kf-primary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    border: 1px solid color-mix(in srgb, var(--kf-primary) 22%, transparent);
+  }
+
+  .kf-hero h2 {
+    margin: 0;
+    color: var(--kf-text);
+    font-size: 28px;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .kf-hero p {
+    margin: 10px 0 0;
+    max-width: 68ch;
+    color: var(--kf-text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .kf-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .kf-metric {
+    border: 1px solid var(--kf-border);
+    border-radius: var(--kf-radius-lg);
+    background: color-mix(in srgb, var(--kf-panel) 92%, var(--kf-bg) 8%);
+    padding: 14px 14px 12px;
+    min-width: 0;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 22%, transparent);
+  }
+
+  .kf-metric-label {
+    color: var(--kf-text-soft);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .kf-metric-value {
+    color: var(--kf-text);
+    font-size: 28px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .kf-metric-sub {
+    color: var(--kf-text-muted);
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .kf-section,
+  .kf-link-card {
+    border: 1px solid var(--kf-border);
+    border-radius: var(--kf-radius-xl);
+    background: linear-gradient(180deg, var(--kf-panel), var(--kf-panel-2));
+    box-shadow: var(--kf-shadow-sm);
+    overflow: hidden;
+  }
+
+  .kf-section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--kf-border);
+  }
+
+  .kf-section-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 1px solid var(--kf-border);
+    background: color-mix(in srgb, var(--kf-bg-soft) 65%, var(--kf-panel) 35%);
+  }
+
+  .kf-section-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .kf-section-title {
+    color: var(--kf-text);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .kf-section-subtitle {
+    color: var(--kf-text-muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .kf-section-body {
+    padding: 18px 20px 20px;
+  }
+
+  .kf-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .kf-field {
+    display: grid;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .kf-label {
+    color: var(--kf-text-soft);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .kf-input,
+  .kf-select,
+  .klipper-farm-settings input[type="text"],
+  .klipper-farm-settings select {
+    width: 100%;
+    min-height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--kf-border);
+    background: var(--kf-panel);
+    color: var(--kf-text);
+    outline: none;
+    box-sizing: border-box;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent);
+  }
+
+  .kf-input::placeholder,
+  .klipper-farm-settings input::placeholder {
+    color: var(--kf-text-soft);
+    opacity: 1;
+  }
+
+  .kf-input:focus,
+  .kf-select:focus,
+  .klipper-farm-settings input:focus,
+  .klipper-farm-settings select:focus {
+    border-color: color-mix(in srgb, var(--kf-primary) 45%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--kf-primary) 14%, transparent);
+  }
+
+  .kf-note {
+    margin: 0;
+    color: var(--kf-text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .kf-printers-container {
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -162,10 +242,14 @@
     width: 100%;
   }
 
-  .printer-card {
-    border: 1px solid #dcdfe3;
-    border-radius: 10px;
-    background: #f8f9fa;
+  .kf-printer-card {
+    border: 1px solid var(--kf-border);
+    border-radius: var(--kf-radius-lg);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--kf-panel) 96%, #fff 4%),
+      color-mix(in srgb, var(--kf-panel-2) 96%, var(--kf-bg) 4%)
+    );
     padding: 14px;
     width: 100%;
     max-width: 100%;
@@ -175,9 +259,10 @@
     display: flex;
     flex-direction: column;
     gap: 0;
+    box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
   }
 
-  .printer-card-header {
+  .kf-printer-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -186,28 +271,97 @@
     min-width: 0;
   }
 
-  .printer-card-title {
+  .kf-printer-card-title {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #444;
+    color: var(--kf-text);
     min-width: 0;
     flex: 1 1 auto;
   }
 
-  .remove-printer-btn {
-    border: 0;
+  .kf-remove-printer-btn {
+    border: 1px solid color-mix(in srgb, #dc3545 30%, transparent);
     background: #dc3545;
     color: #fff;
-    border-radius: 8px;
-    padding: 6px 10px;
+    border-radius: 10px;
+    padding: 8px 12px;
     cursor: pointer;
     font-weight: 700;
     flex: 0 0 auto;
     white-space: nowrap;
   }
 
+  .kf-add-printer-btn {
+    width: 100%;
+    min-height: 46px;
+    border-radius: 12px;
+    border: 1px dashed color-mix(in srgb, var(--kf-primary) 45%, var(--kf-border) 55%);
+    background: color-mix(in srgb, var(--kf-bg-soft) 75%, var(--kf-panel) 25%);
+    color: var(--kf-text);
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0 14px;
+  }
+
+  .kf-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+
+  .kf-toggle-card {
+    border: 1px solid var(--kf-border);
+    border-radius: var(--kf-radius-lg);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--kf-panel) 96%, #fff 4%),
+      color-mix(in srgb, var(--kf-panel-2) 96%, var(--kf-bg) 4%)
+    );
+    padding: 14px;
+    box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
+  }
+
+  .kf-toggle-title {
+    color: var(--kf-text);
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+
+  .kf-toggle-copy {
+    color: var(--kf-text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    margin: 0 0 10px;
+  }
+
+  .kf-link-card {
+    padding: 16px 20px;
+    min-width: 0;
+  }
+
+  .kf-link-card a {
+    color: var(--kf-primary);
+    text-decoration: none;
+    font-weight: 700;
+    word-break: break-word;
+  }
+
+  .kf-link-card a:hover,
+  .kf-link-card a:focus-visible {
+    text-decoration: underline;
+    outline: none;
+  }
+
+  .kf-link-help {
+    margin-top: 8px;
+    color: var(--kf-text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
   .floatingchat-container-wrap,
-  .floating-chat-kofi-popup-iframe {
+  .floatingchat-container-wrap-mobi {
     left: unset !important;
     right: 16px !important;
   }
@@ -217,9 +371,212 @@
   }
 
   .floating-chat-kofi-popup-iframe {
+    left: unset !important;
+    right: 16px !important;
     bottom: 76px !important;
   }
+
+  @media (max-width: 920px) {
+    .kf-metrics {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .kf-hero {
+      padding: 18px;
+    }
+
+    .kf-hero h2 {
+      font-size: 22px;
+    }
+
+    .kf-section-header {
+      padding: 16px;
+    }
+
+    .kf-section-body,
+    .kf-link-card {
+      padding: 16px;
+    }
+
+    .kf-printer-card-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .kf-remove-printer-btn {
+      width: 100%;
+    }
+  }
 </style>
+
+<div class="klipper-farm-settings">
+  <div class="kf-shell">
+    <section class="kf-hero">
+      <div class="kf-eyebrow">Klipper Farm</div>
+      <h2>Monitor multiple Moonraker printers from one shared dashboard.</h2>
+      <p>
+        Add printers, choose which details to display, and render a single farm-wide status board for your e-ink screen.
+      </p>
+
+      <div class="kf-metrics">
+        <div class="kf-metric">
+          <div class="kf-metric-label">Source</div>
+          <div class="kf-metric-value">Moonraker</div>
+          <div class="kf-metric-sub">Per-printer status and telemetry</div>
+        </div>
+        <div class="kf-metric">
+          <div class="kf-metric-label">Scope</div>
+          <div class="kf-metric-value">Multi</div>
+          <div class="kf-metric-sub">Track several printers at once</div>
+        </div>
+        <div class="kf-metric">
+          <div class="kf-metric-label">Display</div>
+          <div class="kf-metric-value">Farm</div>
+          <div class="kf-metric-sub">Status, progress, temps, and spool data</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-section">
+      <div class="kf-section-header">
+        <span class="kf-section-icon" aria-hidden="true">🖨️</span>
+        <div class="kf-section-copy">
+          <div class="kf-section-title">Dashboard settings</div>
+          <div class="kf-section-subtitle">Set the board title and configure your printer list.</div>
+        </div>
+      </div>
+      <div class="kf-section-body">
+        <div class="kf-grid">
+          <div class="kf-field">
+            <label for="title" class="kf-label">Header text</label>
+            <input type="text" id="title" name="title" placeholder="Klipper Farm" class="kf-input" />
+          </div>
+
+          <input type="hidden" id="printers_json" name="printers_json" />
+
+          <div class="kf-field">
+            <div class="kf-label">Printers</div>
+            <div id="printers_container" class="kf-printers-container"></div>
+            <button type="button" id="add_printer_btn" class="kf-add-printer-btn">+ Add Printer</button>
+            <p class="kf-note">Add one Moonraker endpoint per printer you want on the farm display.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-section">
+      <div class="kf-section-header">
+        <span class="kf-section-icon" aria-hidden="true">⚙️</span>
+        <div class="kf-section-copy">
+          <div class="kf-section-title">Display options</div>
+          <div class="kf-section-subtitle">Choose which printer details appear on the farm board.</div>
+        </div>
+      </div>
+      <div class="kf-section-body">
+        <div class="kf-toggle-grid">
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Progress</div>
+            <div class="kf-toggle-copy">Display each printer’s current progress percentage.</div>
+            <select id="show_progress" name="show_progress" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show File Name</div>
+            <div class="kf-toggle-copy">Display the current file name for active jobs.</div>
+            <select id="show_filename" name="show_filename" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show ETA</div>
+            <div class="kf-toggle-copy">Display estimated remaining print time.</div>
+            <select id="show_eta" name="show_eta" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Layers</div>
+            <div class="kf-toggle-copy">Display current and total print layers when available.</div>
+            <select id="show_layers" name="show_layers" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Temperatures</div>
+            <div class="kf-toggle-copy">Display hotend and bed temperatures.</div>
+            <select id="show_temps" name="show_temps" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Active Spool</div>
+            <div class="kf-toggle-copy">Display the spool currently assigned to the printer.</div>
+            <select id="show_spool" name="show_spool" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Spool Brand</div>
+            <div class="kf-toggle-copy">Display spool vendor or brand information.</div>
+            <select id="show_spool_vendor" name="show_spool_vendor" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Spool Material</div>
+            <div class="kf-toggle-copy">Display filament material for the active spool.</div>
+            <select id="show_spool_material" name="show_spool_material" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Spool Remaining</div>
+            <div class="kf-toggle-copy">Display remaining spool weight if available.</div>
+            <select id="show_spool_remaining" name="show_spool_remaining" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-title">Show Status Message</div>
+            <div class="kf-toggle-copy">Display Moonraker state or status messages.</div>
+            <select id="show_message" name="show_message" class="kf-select">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="kf-link-card">
+      <a href="https://github.com/shadal18/inkypi-klipper-farm-status" target="_blank" rel="noopener noreferrer">
+        github.com/shadal18/inkypi-klipper-farm-status
+      </a>
+      <div class="kf-link-help">Setup help, updates, release notes, and source code.</div>
+    </section>
+  </div>
+</div>
 
 <script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
 <script>
@@ -248,7 +605,7 @@
     const addPrinterBtn = document.getElementById("add_printer_btn")
 
     function syncPrintersJson() {
-      const cards = printersContainer.querySelectorAll(".printer-card")
+      const cards = printersContainer.querySelectorAll(".kf-printer-card")
       const printers = Array.from(cards).map((card) => ({
         name: card.querySelector(".printer-name-input")?.value?.trim() || "",
         url: card.querySelector(".printer-url-input")?.value?.trim() || "",
@@ -258,55 +615,57 @@
     }
 
     function refreshPrinterTitles() {
-      printersContainer.querySelectorAll(".printer-card").forEach((card, index) => {
-        const title = card.querySelector(".printer-card-title")
+      printersContainer.querySelectorAll(".kf-printer-card").forEach((card, index) => {
+        const title = card.querySelector(".kf-printer-card-title")
         if (title) title.textContent = `Printer ${index + 1}`
       })
     }
 
     function createPrinterCard(printer = {}, index = 0) {
       const card = document.createElement("div")
-      card.className = "printer-card"
+      card.className = "kf-printer-card"
 
       card.innerHTML = `
-        <div class="printer-card-header">
-          <div class="printer-card-title">Printer ${index + 1}</div>
-          <button type="button" class="remove-printer-btn">Remove</button>
+        <div class="kf-printer-card-header">
+          <div class="kf-printer-card-title">Printer ${index + 1}</div>
+          <button type="button" class="kf-remove-printer-btn">Remove</button>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Printer Name:</label>
-          <input
-            type="text"
-            class="form-input printer-name-input"
-            placeholder="K1 Max"
-            value="${printer.name || ""}"
-          />
-        </div>
+        <div class="kf-grid">
+          <div class="kf-field">
+            <label class="kf-label">Printer name</label>
+            <input
+              type="text"
+              class="kf-input printer-name-input"
+              placeholder="K1 Max"
+              value="${printer.name || ""}"
+            />
+          </div>
 
-        <div class="form-group">
-          <label class="form-label">Moonraker URL:</label>
-          <input
-            type="text"
-            class="form-input printer-url-input"
-            placeholder="http://printer.local:7125"
-            value="${printer.url || ""}"
-          />
-        </div>
+          <div class="kf-field">
+            <label class="kf-label">Moonraker URL</label>
+            <input
+              type="text"
+              class="kf-input printer-url-input"
+              placeholder="http://printer.local:7125"
+              value="${printer.url || ""}"
+            />
+          </div>
 
-        <div class="form-group" style="margin-bottom: 0;">
-          <label class="form-label">Enabled:</label>
-          <select class="form-input printer-enabled-input">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
+          <div class="kf-field">
+            <label class="kf-label">Enabled</label>
+            <select class="kf-select printer-enabled-input">
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+          </div>
         </div>
       `
 
       const enabledInput = card.querySelector(".printer-enabled-input")
       enabledInput.value = printer.enabled === false ? "false" : "true"
 
-      card.querySelector(".remove-printer-btn").addEventListener("click", () => {
+      card.querySelector(".kf-remove-printer-btn").addEventListener("click", () => {
         card.remove()
         refreshPrinterTitles()
         syncPrintersJson()
@@ -325,7 +684,12 @@
       const el = document.getElementById(key)
       if (!el) return
 
-      if (typeof loadPluginSettings !== "undefined" && loadPluginSettings) {
+      if (
+        typeof loadPluginSettings !== "undefined" &&
+        loadPluginSettings &&
+        typeof pluginSettings !== "undefined" &&
+        pluginSettings
+      ) {
         el.value = pluginSettings[key] || defaults[key]
       } else {
         el.value = defaults[key]
@@ -334,7 +698,12 @@
 
     let printers = printerDefaults
 
-    if (typeof loadPluginSettings !== "undefined" && loadPluginSettings) {
+    if (
+      typeof loadPluginSettings !== "undefined" &&
+      loadPluginSettings &&
+      typeof pluginSettings !== "undefined" &&
+      pluginSettings
+    ) {
       if (pluginSettings.printers_json) {
         try {
           const parsed = JSON.parse(pluginSettings.printers_json)
@@ -353,7 +722,7 @@
     addPrinterBtn.addEventListener("click", () => {
       createPrinterCard(
         { name: "", url: "", enabled: true },
-        printersContainer.querySelectorAll(".printer-card").length,
+        printersContainer.querySelectorAll(".kf-printer-card").length,
       )
       refreshPrinterTitles()
       syncPrintersJson()

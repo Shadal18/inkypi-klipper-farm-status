@@ -110,13 +110,11 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-/* CARD LAYOUT NOW SPLIT INTO MAIN + WEBCAM COLUMN */
-
 .card {
   min-width: 0;
   min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(180px, 0.95fr);
+  display: flex;
+  align-items: stretch;
   gap: 10px;
   padding: 12px 12px 10px;
   box-sizing: border-box;
@@ -125,24 +123,6 @@ body {
   background: rgba(0, 0, 0, 0.05);
   border-top: 8px solid rgba(0, 0, 0, 0.16);
 }
-
-.card-main {
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.card-side {
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-}
-
-/* STATE COLORS */
 
 .card.state-printing {
   border-top-color: #77c36b;
@@ -170,12 +150,29 @@ body {
   background: rgba(92, 143, 216, 0.1);
 }
 
-/* WEBCAM BLOCK */
+.card-main {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-side {
+  flex: 0 0 132px;
+  width: 132px;
+  min-width: 132px;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
 
 .webcam-frame {
   position: relative;
   width: 100%;
-  min-height: 0;
+  height: 100%;
+  min-height: 132px;
   border-radius: 14px;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.28);
@@ -187,6 +184,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   background: rgba(0, 0, 0, 0.08);
 }
 
@@ -208,7 +206,7 @@ body {
 .webcam-empty {
   width: 100%;
   height: 100%;
-  min-height: 120px;
+  min-height: 132px;
   display: grid;
   place-items: center;
   text-align: center;
@@ -220,8 +218,6 @@ body {
   opacity: 0.72;
   background: rgba(255, 255, 255, 0.2);
 }
-
-/* ORIGINAL CARD CONTENT STYLES */
 
 .card-header {
   display: flex;
@@ -369,8 +365,6 @@ body {
   word-break: break-word;
 }
 
-/* SMALLER SIZES FOR MANY CARDS */
-
 .cards-count-5 .card,
 .cards-count-6 .card,
 .cards-count-7 .card,
@@ -380,7 +374,17 @@ body {
   padding: 10px 10px 9px;
   gap: 8px;
   border-radius: 14px;
-  grid-template-columns: minmax(0, 1.35fr) minmax(132px, 0.82fr);
+}
+
+.cards-count-5 .card-side,
+.cards-count-6 .card-side,
+.cards-count-7 .card-side,
+.cards-count-8 .card-side,
+.cards-count-9 .card-side,
+.cards-count-10 .card-side {
+  flex-basis: 104px;
+  width: 104px;
+  min-width: 104px;
 }
 
 .cards-count-5 .printer-name,
@@ -450,6 +454,21 @@ body {
   font-size: 10px;
 }
 
+.cards-count-5 .webcam-frame,
+.cards-count-6 .webcam-frame,
+.cards-count-7 .webcam-frame,
+.cards-count-8 .webcam-frame,
+.cards-count-9 .webcam-frame,
+.cards-count-10 .webcam-frame,
+.cards-count-5 .webcam-empty,
+.cards-count-6 .webcam-empty,
+.cards-count-7 .webcam-empty,
+.cards-count-8 .webcam-empty,
+.cards-count-9 .webcam-empty,
+.cards-count-10 .webcam-empty {
+  min-height: 104px;
+}
+
 .cards-count-5 .webcam-label,
 .cards-count-6 .webcam-label,
 .cards-count-7 .webcam-label,
@@ -459,8 +478,6 @@ body {
   font-size: 9px;
   padding: 4px 6px;
 }
-
-/* MOBILE */
 
 @media (max-width: 900px) {
   .topbar {
@@ -486,17 +503,18 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .card,
-  .cards-count-5 .card,
-  .cards-count-6 .card,
-  .cards-count-7 .card,
-  .cards-count-8 .card,
-  .cards-count-9 .card,
-  .cards-count-10 .card {
-    grid-template-columns: 1fr;
+  .card {
+    flex-direction: column;
   }
 
   .card-side {
+    width: 100%;
+    min-width: 0;
+    flex: 0 0 auto;
+  }
+
+  .webcam-frame,
+  .webcam-empty {
     min-height: 180px;
   }
 }

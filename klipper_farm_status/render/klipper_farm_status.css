@@ -110,12 +110,14 @@ body {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* CARD LAYOUT NOW SPLIT INTO MAIN + WEBCAM COLUMN */
+
 .card {
   min-width: 0;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(180px, 0.95fr);
+  gap: 10px;
   padding: 12px 12px 10px;
   box-sizing: border-box;
   border-radius: 18px;
@@ -123,6 +125,24 @@ body {
   background: rgba(0, 0, 0, 0.05);
   border-top: 8px solid rgba(0, 0, 0, 0.16);
 }
+
+.card-main {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-side {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+/* STATE COLORS */
 
 .card.state-printing {
   border-top-color: #77c36b;
@@ -149,6 +169,59 @@ body {
   border-top-color: #5c8fd8;
   background: rgba(92, 143, 216, 0.1);
 }
+
+/* WEBCAM BLOCK */
+
+.webcam-frame {
+  position: relative;
+  width: 100%;
+  min-height: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.webcam-stream {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.webcam-label {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.52);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.webcam-empty {
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 12px;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 700;
+  opacity: 0.72;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ORIGINAL CARD CONTENT STYLES */
 
 .card-header {
   display: flex;
@@ -296,6 +369,8 @@ body {
   word-break: break-word;
 }
 
+/* SMALLER SIZES FOR MANY CARDS */
+
 .cards-count-5 .card,
 .cards-count-6 .card,
 .cards-count-7 .card,
@@ -303,8 +378,9 @@ body {
 .cards-count-9 .card,
 .cards-count-10 .card {
   padding: 10px 10px 9px;
-  gap: 6px;
+  gap: 8px;
   border-radius: 14px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(132px, 0.82fr);
 }
 
 .cards-count-5 .printer-name,
@@ -374,6 +450,18 @@ body {
   font-size: 10px;
 }
 
+.cards-count-5 .webcam-label,
+.cards-count-6 .webcam-label,
+.cards-count-7 .webcam-label,
+.cards-count-8 .webcam-label,
+.cards-count-9 .webcam-label,
+.cards-count-10 .webcam-label {
+  font-size: 9px;
+  padding: 4px 6px;
+}
+
+/* MOBILE */
+
 @media (max-width: 900px) {
   .topbar {
     flex-direction: column;
@@ -396,5 +484,19 @@ body {
   .cards-count-9,
   .cards-count-10 {
     grid-template-columns: 1fr;
+  }
+
+  .card,
+  .cards-count-5 .card,
+  .cards-count-6 .card,
+  .cards-count-7 .card,
+  .cards-count-8 .card,
+  .cards-count-9 .card,
+  .cards-count-10 .card {
+    grid-template-columns: 1fr;
+  }
+
+  .card-side {
+    min-height: 180px;
   }
 }

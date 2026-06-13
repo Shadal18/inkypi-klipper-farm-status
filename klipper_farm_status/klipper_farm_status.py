@@ -70,9 +70,9 @@ class KlipperFarmStatus(BasePlugin):
         return f"{base}/webcam/?action=snapshot"
 
     def _fetch_snapshot_parts(self, snapshot_url):
-        print("SNAPSHOT BYTES:", len(response.content), "SNAPSHOT BASE64 LEN:", len(encoded))
         if not snapshot_url:
             return "", ""
+
         try:
             response = requests.get(snapshot_url, timeout=self.IMAGE_TIMEOUT)
             response.raise_for_status()
@@ -84,18 +84,8 @@ class KlipperFarmStatus(BasePlugin):
         except Exception:
             return "", ""
 
-    def _fetch_printer(self, name, moonraker_url, include_spool=True, include_image=True):
-        print("PRINTER SNAPSHOT SET FOR", name, "LEN", len(printer["snapshot_base64"]))
-        base = (moonraker_url or "").strip().rstrip("/")
-        if not base:
-            raise RuntimeError(f"Moonraker URL missing for printer '{name}'.")
-
-        query_url = (
-            f"{base}/printer/objects/query?"
-            "print_stats&display_status&toolhead&extruder&heater_bed&virtual_sdcard&webhooks"
-        )
-
-        printer = {
+    def _empty_printer(self, name, base="", status_label="Offline", state_class="offline", message=""):
+        return {
             "name": name,
             "url": base,
             "stream_url": self._build_stream_url(base),
@@ -104,8 +94,8 @@ class KlipperFarmStatus(BasePlugin):
             "snapshot_mime": "image/jpeg",
             "connected": False,
             "state": "offline",
-            "status_label": "Offline",
-            "state_class": "offline",
+            "status_label": status_label,
+            "state_class": state_class,
             "progress": 0,
             "filename": "",
             "print_duration": 0,
@@ -116,7 +106,7 @@ class KlipperFarmStatus(BasePlugin):
             "total_layer": None,
             "extruder_temp": "—",
             "bed_temp": "—",
-            "message": "",
+            "message": message,
             "spool_id": None,
             "spool_name": "",
             "spool_vendor": "",
@@ -124,6 +114,22 @@ class KlipperFarmStatus(BasePlugin):
             "spool_remaining": None,
             "spool_color": "",
         }
+
+    def _fetch_printer(self, name, moonraker_url, include_spool=True, include_image=True):
+        base = (moonraker_url or "").strip().rstrip("/")
+
+        printer = self._empty_printer(name=name, base=base, status_label="Offline", state_class="offline", message="")
+
+        if not base:
+            printer["status_label"] = "Missing URL"
+            printer["state_class"] = "error"
+            printer["message"] = "Moonraker URL not configured"
+            return printer
+
+        query_url = (
+            f"{base}/printer/objects/query?"
+            "print_stats&display_status&toolhead&extruder&heater_bed&virtual_sdcard&webhooks"
+        )
 
         try:
             data = self._fetch_json(query_url, timeout=12)
@@ -144,6 +150,7 @@ class KlipperFarmStatus(BasePlugin):
             raw_state = str(raw_state).strip().lower()
 
             printer["connected"] = True
+            printer["state"] = raw_state
 
             if raw_state == "printing":
                 printer["status_label"] = "Printing"
@@ -161,7 +168,6 @@ class KlipperFarmStatus(BasePlugin):
                 printer["status_label"] = "Idle"
                 printer["state_class"] = "idle"
 
-            printer["state"] = raw_state
             printer["filename"] = (print_stats.get("filename") or "").split("/")[-1]
             printer["progress"] = round(safe_float(virtual_sdcard.get("progress"), 0) * 100)
             printer["print_duration"] = safe_int(print_stats.get("print_duration"), 0)
@@ -239,6 +245,8 @@ class KlipperFarmStatus(BasePlugin):
                     printer["message"] = f"{printer['message']} | {cam_msg}".strip(" |")
 
         except Exception as e:
+            printer["status_label"] = "Error"
+            printer["state_class"] = "error"
             printer["message"] = str(e)
 
         return printer
@@ -267,42 +275,10 @@ class KlipperFarmStatus(BasePlugin):
             name = (printer_cfg.get("name") or f"Printer {idx}").strip()
             url = (printer_cfg.get("url") or "").strip()
 
-            if not url:
-                printers.append({
-                    "name": name,
-                    "url": "",
-                    "stream_url": "",
-                    "snapshot_url": "",
-                    "snapshot_base64": "",
-                    "snapshot_mime": "image/jpeg",
-                    "connected": False,
-                    "state": "offline",
-                    "status_label": "Missing URL",
-                    "state_class": "error",
-                    "progress": 0,
-                    "filename": "",
-                    "print_duration": 0,
-                    "total_duration": 0,
-                    "remaining_seconds": 0,
-                    "eta": "—",
-                    "current_layer": None,
-                    "total_layer": None,
-                    "extruder_temp": "—",
-                    "bed_temp": "—",
-                    "message": "Moonraker URL not configured",
-                    "spool_id": None,
-                    "spool_name": "",
-                    "spool_vendor": "",
-                    "spool_material": "",
-                    "spool_remaining": None,
-                    "spool_color": "",
-                })
-                continue
-
             printers.append(
                 self._fetch_printer(
-                    name,
-                    url,
+                    name=name,
+                    moonraker_url=url,
                     include_spool=include_spool,
                     include_image=include_image,
                 )

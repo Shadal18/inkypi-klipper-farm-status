@@ -3,6 +3,9 @@ from datetime import datetime
 import requests
 import json
 import base64
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def to_bool(value, default=False):
@@ -71,6 +74,7 @@ class KlipperFarmStatus(BasePlugin):
 
     def _fetch_snapshot_parts(self, snapshot_url):
         if not snapshot_url:
+            logger.info("KFS_IMAGE_DEBUG snapshot_url missing")
             return "", ""
 
         try:
@@ -80,8 +84,23 @@ class KlipperFarmStatus(BasePlugin):
             if not content_type.startswith("image/"):
                 content_type = "image/jpeg"
             encoded = base64.b64encode(response.content).decode("ascii")
+
+            logger.info(
+                "KFS_IMAGE_DEBUG snapshot ok | url=%s | status=%s | mime=%s | bytes=%s | b64_len=%s",
+                snapshot_url,
+                response.status_code,
+                content_type,
+                len(response.content),
+                len(encoded),
+            )
+
             return encoded, content_type
-        except Exception:
+        except Exception as e:
+            logger.info(
+                "KFS_IMAGE_DEBUG snapshot failed | url=%s | error=%s",
+                snapshot_url,
+                str(e),
+            )
             return "", ""
 
     def _empty_printer(self, name, base="", status_label="Offline", state_class="offline", message=""):
@@ -124,6 +143,7 @@ class KlipperFarmStatus(BasePlugin):
             printer["status_label"] = "Missing URL"
             printer["state_class"] = "error"
             printer["message"] = "Moonraker URL not configured"
+            logger.info("KFS_PRINTER_DEBUG name=%s | missing moonraker url", name)
             return printer
 
         query_url = (
@@ -232,8 +252,8 @@ class KlipperFarmStatus(BasePlugin):
                         printer["spool_material"] = filament.get("material") or ""
                         printer["spool_remaining"] = safe_int(spool.get("remaining_weight"), 0)
                         printer["spool_color"] = filament.get("color_hex") or ""
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.info("KFS_SPOOL_DEBUG name=%s | error=%s", name, str(e))
 
             if include_image:
                 snapshot_base64, snapshot_mime = self._fetch_snapshot_parts(printer["snapshot_url"])
@@ -244,10 +264,27 @@ class KlipperFarmStatus(BasePlugin):
                     cam_msg = f"cam fetch failed: {printer['snapshot_url']}"
                     printer["message"] = f"{printer['message']} | {cam_msg}".strip(" |")
 
+            logger.info(
+                "KFS_PRINTER_DEBUG name=%s | state=%s | status_label=%s | snapshot_url=%s | snapshot_len=%s | message=%s",
+                name,
+                printer["state_class"],
+                printer["status_label"],
+                printer["snapshot_url"],
+                len(printer.get("snapshot_base64") or ""),
+                printer.get("message", ""),
+            )
+
         except Exception as e:
             printer["status_label"] = "Error"
             printer["state_class"] = "error"
             printer["message"] = str(e)
+
+            logger.info(
+                "KFS_PRINTER_DEBUG name=%s | fetch failed | query_url=%s | error=%s",
+                name,
+                query_url,
+                str(e),
+            )
 
         return printer
 
@@ -267,9 +304,18 @@ class KlipperFarmStatus(BasePlugin):
         include_spool = to_bool(settings.get("show_spool"), True)
         include_image = to_bool(settings.get("show_image"), True)
 
+        logger.info(
+            "KFS_RENDER_DEBUG title=%s | printers_configured=%s | include_spool=%s | include_image=%s",
+            title,
+            len(configured_printers),
+            include_spool,
+            include_image,
+        )
+
         for idx, printer_cfg in enumerate(configured_printers, start=1):
             enabled = to_bool(printer_cfg.get("enabled"), True)
             if not enabled:
+                logger.info("KFS_RENDER_DEBUG skipping disabled printer idx=%s", idx)
                 continue
 
             name = (printer_cfg.get("name") or f"Printer {idx}").strip()
@@ -292,6 +338,16 @@ class KlipperFarmStatus(BasePlugin):
         width, height = device_config.get_resolution()
         if device_config.get_config("orientation") == "vertical":
             width, height = height, width
+
+        logger.info(
+            "KFS_RENDER_DEBUG total=%s | printing=%s | paused=%s | offline=%s | dimensions=%sx%s",
+            total,
+            printing,
+            paused,
+            offline,
+            width,
+            height,
+        )
 
         return self.render_image(
             dimensions=(width, height),

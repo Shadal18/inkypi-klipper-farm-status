@@ -165,8 +165,9 @@ body {
   width: 132px;
   min-width: 132px;
   max-width: 132px;
-  align-self: stretch;
   display: flex;
+  align-items: stretch;
+  justify-content: stretch;
 }
 
 .webcam-frame {

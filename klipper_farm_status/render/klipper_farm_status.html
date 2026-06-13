@@ -98,18 +98,18 @@
         {% endif %}
       </div>
 
-      <aside class="card-side">
-        {% if printer.snapshot_path %}
+      <div class="card-side">
+        {% if printer.snapshot_data_url %}
         <div class="webcam-frame">
-          <img class="webcam-stream" src="{{ printer.snapshot_path }}" alt="{{ printer.name }} snapshot" />
+          <img class="webcam-stream" src="{{ printer.snapshot_data_url }}" alt="{{ printer.name }} snapshot" />
           <div class="webcam-label">Cam</div>
         </div>
         {% else %}
         <div class="webcam-frame">
-          <div class="webcam-empty">No snapshot</div>
+          <div class="webcam-empty">Cam error</div>
         </div>
         {% endif %}
-      </aside>
+      </div>
     </article>
     {% endfor %}
   </div>

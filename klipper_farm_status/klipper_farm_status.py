@@ -1,10 +1,9 @@
 from plugins.base_plugin.base_plugin import BasePlugin
 from datetime import datetime
-from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 import requests
 import json
-import re
+import base64
 
 
 def to_bool(value, default=False):
@@ -50,63 +49,77 @@ def format_temp(current, target):
     return f"{round(c)}°"
 
 
-def slugify(value):
-    value = (value or "").strip().lower()
-    value = re.sub(r"[^a-z0-9]+", "-", value)
-    return value.strip("-") or "printer"
-
-
 class KlipperFarmStatus(BasePlugin):
-    SNAPSHOT_TIMEOUT = 10
+    JSON_TIMEOUT = 10
+    SNAPSHOT_TIMEOUT = 12
 
     def _fetch_json(self, url, timeout=10):
         response = requests.get(url, timeout=timeout)
         response.raise_for_status()
         return response.json()
 
-    def _build_snapshot_url(self, moonraker_url):
+    def _resolve_url(self, base, maybe_relative):
+        if not maybe_relative:
+            return ""
+        parsed = urlparse(maybe_relative)
+        if parsed.scheme and parsed.netloc:
+            return maybe_relative
+        return urljoin(base.rstrip("/") + "/", maybe_relative.lstrip("/"))
+
+    def _candidate_snapshot_urls(self, moonraker_url):
+        base = (moonraker_url or "").strip().rstrip("/")
+        return [
+            f"{base}/webcam/?action=snapshot",
+            f"{base}/webcam?action=snapshot",
+            f"{base}/snapshot",
+        ]
+
+    def _get_webcam_snapshot_url(self, moonraker_url):
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             return ""
-        return f"{base}/webcam/?action=snapshot"
 
-    def _get_snapshot_cache_dir(self):
-        base_dir = Path(__file__).resolve().parent
-        cache_dir = base_dir / "snapshot_cache"
-        cache_dir.mkdir(parents=True, exist_ok=True)
-        return cache_dir
+        try:
+            data = self._fetch_json(f"{base}/server/webcams/list", timeout=self.JSON_TIMEOUT)
+            webcams = data.get("result", {}).get("webcams", []) or []
+            for webcam in webcams:
+                snapshot_url = (
+                    webcam.get("snapshot_url")
+                    or webcam.get("urlSnapshot")
+                    or webcam.get("snapshotUrl")
+                    or ""
+                )
+                resolved = self._resolve_url(base, snapshot_url)
+                if resolved:
+                    return resolved
+        except Exception:
+            pass
 
-    def _guess_extension(self, content_type):
-        ctype = (content_type or "").lower()
-        if "png" in ctype:
-            return ".png"
-        if "webp" in ctype:
-            return ".webp"
-        return ".jpg"
+        for candidate in self._candidate_snapshot_urls(base):
+            try:
+                response = requests.get(candidate, timeout=5, stream=True)
+                response.raise_for_status()
+                ctype = (response.headers.get("content-type") or "").lower()
+                if "image/" in ctype or response.status_code == 200:
+                    response.close()
+                    return candidate
+            except Exception:
+                continue
 
-    def _save_snapshot(self, printer_name, snapshot_url):
+        return ""
+
+    def _fetch_snapshot_data_url(self, snapshot_url):
         if not snapshot_url:
             return ""
 
-        cache_dir = self._get_snapshot_cache_dir()
-        safe_name = slugify(printer_name)
-        filename = f"{safe_name}{self._guess_extension('image/jpeg')}"
-        final_path = cache_dir / filename
-
         try:
-            response = requests.get(snapshot_url, timeout=self.SNAPSHOT_TIMEOUT, stream=True)
+            response = requests.get(snapshot_url, timeout=self.SNAPSHOT_TIMEOUT)
             response.raise_for_status()
-
-            content_type = response.headers.get("content-type", "")
-            ext = self._guess_extension(content_type)
-            final_path = cache_dir / f"{safe_name}{ext}"
-
-            with open(final_path, "wb") as handle:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        handle.write(chunk)
-
-            return str(final_path)
+            content_type = response.headers.get("content-type", "image/jpeg")
+            if not content_type.startswith("image/"):
+                content_type = "image/jpeg"
+            encoded = base64.b64encode(response.content).decode("ascii")
+            return f"data:{content_type};base64,{encoded}"
         except Exception:
             return ""
 
@@ -119,13 +132,12 @@ class KlipperFarmStatus(BasePlugin):
             f"{base}/printer/objects/query?"
             "print_stats&display_status&toolhead&extruder&heater_bed&virtual_sdcard&webhooks"
         )
-        snapshot_url = self._build_snapshot_url(base)
 
         printer = {
             "name": name,
             "url": base,
-            "snapshot_url": snapshot_url,
-            "snapshot_path": "",
+            "snapshot_url": "",
+            "snapshot_data_url": "",
             "connected": False,
             "state": "offline",
             "status_label": "Offline",
@@ -253,7 +265,11 @@ class KlipperFarmStatus(BasePlugin):
                 except Exception:
                     pass
 
-            printer["snapshot_path"] = self._save_snapshot(name, snapshot_url)
+            printer["snapshot_url"] = self._get_webcam_snapshot_url(base)
+            printer["snapshot_data_url"] = self._fetch_snapshot_data_url(printer["snapshot_url"])
+
+            if not printer["snapshot_data_url"] and not printer["message"]:
+                printer["message"] = "Snapshot fetch failed"
 
         except Exception as e:
             printer["message"] = str(e)
@@ -288,7 +304,7 @@ class KlipperFarmStatus(BasePlugin):
                     "name": name,
                     "url": "",
                     "snapshot_url": "",
-                    "snapshot_path": "",
+                    "snapshot_data_url": "",
                     "connected": False,
                     "state": "offline",
                     "status_label": "Missing URL",

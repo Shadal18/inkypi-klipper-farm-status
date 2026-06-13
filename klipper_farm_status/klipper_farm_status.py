@@ -83,7 +83,7 @@ class KlipperFarmStatus(BasePlugin):
         except Exception:
             return "", ""
 
-    def _fetch_printer(self, name, moonraker_url, include_spool=True):
+    def _fetch_printer(self, name, moonraker_url, include_spool=True, include_image=True):
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             raise RuntimeError(f"Moonraker URL missing for printer '{name}'.")
@@ -227,13 +227,14 @@ class KlipperFarmStatus(BasePlugin):
                 except Exception:
                     pass
 
-            snapshot_base64, snapshot_mime = self._fetch_snapshot_parts(printer["snapshot_url"])
-            printer["snapshot_base64"] = snapshot_base64
-            printer["snapshot_mime"] = snapshot_mime or "image/jpeg"
+            if include_image:
+                snapshot_base64, snapshot_mime = self._fetch_snapshot_parts(printer["snapshot_url"])
+                printer["snapshot_base64"] = snapshot_base64
+                printer["snapshot_mime"] = snapshot_mime or "image/jpeg"
 
-            if not printer["snapshot_base64"]:
-                cam_msg = f"cam fetch failed: {printer['snapshot_url']}"
-                printer["message"] = f"{printer['message']} | {cam_msg}".strip(" |")
+                if not printer["snapshot_base64"]:
+                    cam_msg = f"cam fetch failed: {printer['snapshot_url']}"
+                    printer["message"] = f"{printer['message']} | {cam_msg}".strip(" |")
 
         except Exception as e:
             printer["message"] = str(e)
@@ -254,6 +255,7 @@ class KlipperFarmStatus(BasePlugin):
 
         printers = []
         include_spool = to_bool(settings.get("show_spool"), True)
+        include_image = to_bool(settings.get("show_image"), True)
 
         for idx, printer_cfg in enumerate(configured_printers, start=1):
             enabled = to_bool(printer_cfg.get("enabled"), True)
@@ -295,7 +297,14 @@ class KlipperFarmStatus(BasePlugin):
                 })
                 continue
 
-            printers.append(self._fetch_printer(name, url, include_spool=include_spool))
+            printers.append(
+                self._fetch_printer(
+                    name,
+                    url,
+                    include_spool=include_spool,
+                    include_image=include_image,
+                )
+            )
 
         total = len(printers)
         printing = sum(1 for p in printers if p["state_class"] == "printing")
@@ -318,6 +327,7 @@ class KlipperFarmStatus(BasePlugin):
                 "printing": printing,
                 "paused": paused,
                 "offline": offline,
+                "show_image": include_image,
                 "show_progress": to_bool(settings.get("show_progress"), True),
                 "show_filename": to_bool(settings.get("show_filename"), True),
                 "show_eta": to_bool(settings.get("show_eta"), True),

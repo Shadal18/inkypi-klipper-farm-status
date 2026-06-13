@@ -98,6 +98,7 @@
         {% endif %}
       </div>
 
+      {% if show_image %}
       <aside class="card-side">
         {% if printer.snapshot_base64 %}
         <div class="webcam-frame">
@@ -114,6 +115,7 @@
         </div>
         {% endif %}
       </aside>
+      {% endif %}
     </article>
     {% endfor %}
   </div>

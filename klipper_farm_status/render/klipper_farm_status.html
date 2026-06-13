@@ -18,7 +18,9 @@
 
   <div class="cards cards-count-{{ printers|length }}">
     {% for printer in printers %}
-    <article class="card state-{{ printer.state_class }}">
+    <article
+      class="card state-{{ printer.state_class }} {% if show_image %}{% if printer.snapshot_base64 %}has-image{% else %}no-image{% endif %}{% endif %}"
+    >
       <div class="card-main">
         <div class="card-header">
           <div class="card-header-main">

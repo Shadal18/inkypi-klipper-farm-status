@@ -83,9 +83,10 @@ body {
 .cards {
   min-height: 0;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   align-content: start;
   grid-auto-rows: minmax(0, auto);
+  overflow: hidden;
 }
 
 .cards-count-1 {
@@ -113,15 +114,16 @@ body {
 .card {
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 90px;
+  grid-template-columns: minmax(0, 1fr) 128px;
   align-items: start;
-  gap: 12px;
-  padding: 12px;
+  gap: 18px;
+  padding: 14px 16px;
   box-sizing: border-box;
   border-radius: 18px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.05);
   border-top: 8px solid rgba(0, 0, 0, 0.16);
+  min-height: 188px;
 }
 
 .card.state-printing {
@@ -152,43 +154,46 @@ body {
 
 .card-main {
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  padding-bottom: 2px;
 }
 
 .card-side {
-  width: 90px;
-  min-width: 90px;
-  max-width: 90px;
+  width: 128px;
+  min-width: 128px;
+  max-width: 128px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: flex-end;
+  align-self: center;
 }
 
 .snapshot-box {
-  width: 90px;
-  height: 90px;
-  min-width: 90px;
-  min-height: 90px;
-  max-width: 90px;
-  max-height: 90px;
-  border-radius: 12px;
+  width: 128px;
+  height: 128px;
+  min-width: 128px;
+  min-height: 128px;
+  max-width: 128px;
+  max-height: 128px;
+  border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .snapshot-img {
-  width: 90px;
-  height: 90px;
-  min-width: 90px;
-  min-height: 90px;
-  max-width: 90px;
-  max-height: 90px;
+  width: 128px;
+  height: 128px;
+  min-width: 128px;
+  min-height: 128px;
+  max-width: 128px;
+  max-height: 128px;
   object-fit: cover;
   object-position: center;
   display: block;
@@ -196,19 +201,19 @@ body {
 }
 
 .snapshot-empty {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.2;
   font-weight: 700;
   text-align: center;
   color: rgba(0, 0, 0, 0.58);
-  padding: 6px;
+  padding: 8px;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -218,8 +223,8 @@ body {
 }
 
 .printer-name {
-  font-size: 22px;
-  line-height: 1.05;
+  font-size: 24px;
+  line-height: 1.02;
   font-weight: 800;
   margin-bottom: 4px;
   min-width: 0;
@@ -239,20 +244,19 @@ body {
 
 .progress-badge {
   flex: 0 0 auto;
-  padding: 6px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.34);
-  font-size: 18px;
+  padding: 4px 0;
+  background: transparent;
+  font-size: 20px;
   line-height: 1;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .filename {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.2;
-  font-weight: 600;
-  opacity: 0.86;
+  font-weight: 700;
+  opacity: 0.88;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -263,13 +267,13 @@ body {
 .metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 8px 10px;
 }
 
 .metric {
   min-width: 0;
   border-radius: 12px;
-  padding: 9px 10px 8px;
+  padding: 8px 10px 7px;
   background: rgba(255, 255, 255, 0.28);
 }
 
@@ -286,7 +290,7 @@ body {
 
 .metric-value {
   display: block;
-  font-size: 17px;
+  font-size: 15px;
   line-height: 1.05;
   font-weight: 800;
   min-width: 0;
@@ -301,13 +305,13 @@ body {
   align-items: flex-start;
   gap: 10px;
   border-radius: 14px;
-  padding: 10px 11px;
+  padding: 9px 10px;
   background: rgba(255, 255, 255, 0.3);
 }
 
 .spool-dot {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   flex: 0 0 auto;
   margin-top: 2px;
@@ -321,7 +325,7 @@ body {
 }
 
 .spool-title {
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.15;
   font-weight: 800;
   margin-bottom: 3px;
@@ -331,7 +335,7 @@ body {
 }
 
 .spool-meta {
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.2;
   opacity: 0.72;
   overflow: hidden;
@@ -340,12 +344,12 @@ body {
 }
 
 .message {
-  font-size: 11px;
+  font-size: 10px;
   line-height: 1.2;
   opacity: 0.72;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   word-break: break-word;
 }
@@ -356,10 +360,11 @@ body {
 .cards-count-8 .card,
 .cards-count-9 .card,
 .cards-count-10 .card {
-  grid-template-columns: minmax(0, 1fr) 72px;
-  gap: 8px;
-  padding: 10px;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 12px;
+  padding: 12px;
   border-radius: 14px;
+  min-height: 156px;
 }
 
 .cards-count-5 .card-side,
@@ -368,9 +373,9 @@ body {
 .cards-count-8 .card-side,
 .cards-count-9 .card-side,
 .cards-count-10 .card-side {
-  width: 72px;
-  min-width: 72px;
-  max-width: 72px;
+  width: 96px;
+  min-width: 96px;
+  max-width: 96px;
 }
 
 .cards-count-5 .snapshot-box,
@@ -385,12 +390,12 @@ body {
 .cards-count-8 .snapshot-img,
 .cards-count-9 .snapshot-img,
 .cards-count-10 .snapshot-img {
-  width: 72px;
-  height: 72px;
-  min-width: 72px;
-  min-height: 72px;
-  max-width: 72px;
-  max-height: 72px;
+  width: 96px;
+  height: 96px;
+  min-width: 96px;
+  min-height: 96px;
+  max-width: 96px;
+  max-height: 96px;
 }
 
 .cards-count-5 .printer-name,
@@ -399,7 +404,7 @@ body {
 .cards-count-8 .printer-name,
 .cards-count-9 .printer-name,
 .cards-count-10 .printer-name {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .cards-count-5 .progress-badge,
@@ -408,8 +413,16 @@ body {
 .cards-count-8 .progress-badge,
 .cards-count-9 .progress-badge,
 .cards-count-10 .progress-badge {
-  font-size: 15px;
-  padding: 5px 7px;
+  font-size: 17px;
+}
+
+.cards-count-5 .filename,
+.cards-count-6 .filename,
+.cards-count-7 .filename,
+.cards-count-8 .filename,
+.cards-count-9 .filename,
+.cards-count-10 .filename {
+  font-size: 11px;
 }
 
 .cards-count-5 .metric,
@@ -427,15 +440,9 @@ body {
 .cards-count-8 .metric-value,
 .cards-count-9 .metric-value,
 .cards-count-10 .metric-value {
-  font-size: 14px;
+  font-size: 13px;
 }
 
-.cards-count-5 .filename,
-.cards-count-6 .filename,
-.cards-count-7 .filename,
-.cards-count-8 .filename,
-.cards-count-9 .filename,
-.cards-count-10 .filename,
 .cards-count-5 .spool-title,
 .cards-count-6 .spool-title,
 .cards-count-7 .spool-title,
@@ -491,10 +498,24 @@ body {
   }
 
   .card {
-    grid-template-columns: minmax(0, 1fr) 90px;
+    grid-template-columns: minmax(0, 1fr) 112px;
+    gap: 14px;
+    min-height: 172px;
   }
 
   .card-side {
-    justify-content: flex-end;
+    width: 112px;
+    min-width: 112px;
+    max-width: 112px;
+  }
+
+  .snapshot-box,
+  .snapshot-img {
+    width: 112px;
+    height: 112px;
+    min-width: 112px;
+    min-height: 112px;
+    max-width: 112px;
+    max-height: 112px;
   }
 }

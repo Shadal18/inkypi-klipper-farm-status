@@ -117,7 +117,7 @@ body {
   flex-direction: row;
   align-items: stretch;
   gap: 12px;
-  padding: 12px 12px 12px;
+  padding: 12px;
   box-sizing: border-box;
   border-radius: 18px;
   overflow: visible;
@@ -154,29 +154,30 @@ body {
 .card-main {
   min-width: 0;
   min-height: 0;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-bottom: 2px;
+  gap: 8px;
+  overflow: hidden;
 }
 
 .card-side {
-  width: 128px;
-  min-width: 128px;
-  max-width: 128px;
+  flex: 0 0 150px;
+  width: 150px;
+  min-width: 150px;
+  max-width: 150px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  align-self: center;
+  justify-content: center;
 }
 
 .snapshot-box {
-  width: 128px;
-  height: 128px;
-  min-width: 128px;
-  min-height: 128px;
-  max-width: 128px;
-  max-height: 128px;
+  width: 150px;
+  height: 150px;
+  min-width: 150px;
+  min-height: 150px;
+  max-width: 150px;
+  max-height: 150px;
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.12);
@@ -187,12 +188,12 @@ body {
 }
 
 .snapshot-img {
-  width: 128px;
-  height: 128px;
-  min-width: 128px;
-  min-height: 128px;
-  max-width: 128px;
-  max-height: 128px;
+  width: 150px;
+  height: 150px;
+  min-width: 150px;
+  min-height: 150px;
+  max-width: 150px;
+  max-height: 150px;
   object-fit: cover;
   object-position: center;
   display: block;
@@ -266,7 +267,8 @@ body {
 .metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 10px;
+  gap: 8px;
+  align-content: start;
 }
 
 .metric {
@@ -359,7 +361,6 @@ body {
 .cards-count-8 .card,
 .cards-count-9 .card,
 .cards-count-10 .card {
-  grid-template-columns: minmax(0, 1fr) 96px;
   gap: 12px;
   padding: 12px;
   border-radius: 14px;
@@ -372,9 +373,10 @@ body {
 .cards-count-8 .card-side,
 .cards-count-9 .card-side,
 .cards-count-10 .card-side {
-  width: 96px;
-  min-width: 96px;
-  max-width: 96px;
+  flex: 0 0 108px;
+  width: 108px;
+  min-width: 108px;
+  max-width: 108px;
 }
 
 .cards-count-5 .snapshot-box,
@@ -389,12 +391,12 @@ body {
 .cards-count-8 .snapshot-img,
 .cards-count-9 .snapshot-img,
 .cards-count-10 .snapshot-img {
-  width: 96px;
-  height: 96px;
-  min-width: 96px;
-  min-height: 96px;
-  max-width: 96px;
-  max-height: 96px;
+  width: 108px;
+  height: 108px;
+  min-width: 108px;
+  min-height: 108px;
+  max-width: 108px;
+  max-height: 108px;
 }
 
 .cards-count-5 .printer-name,
@@ -497,12 +499,12 @@ body {
   }
 
   .card {
-    grid-template-columns: minmax(0, 1fr) 112px;
     gap: 14px;
     min-height: 172px;
   }
 
   .card-side {
+    flex: 0 0 112px;
     width: 112px;
     min-width: 112px;
     max-width: 112px;
@@ -517,21 +519,4 @@ body {
     max-width: 112px;
     max-height: 112px;
   }
-}
-
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  align-content: start;
-}
-
-.card-main {
-  min-width: 0;
-  min-height: 0;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
 }

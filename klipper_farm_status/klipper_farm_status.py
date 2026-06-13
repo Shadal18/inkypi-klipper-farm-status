@@ -1,6 +1,6 @@
 from plugins.base_plugin.base_plugin import BasePlugin
 from datetime import datetime
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin, urlparse, urlunparse
 import requests
 import json
 import base64
@@ -50,10 +50,10 @@ def format_temp(current, target):
 
 
 class KlipperFarmStatus(BasePlugin):
-    JSON_TIMEOUT = 10
-    SNAPSHOT_TIMEOUT = 12
+    JSON_TIMEOUT = 8
+    SNAPSHOT_TIMEOUT = 10
 
-    def _fetch_json(self, url, timeout=10):
+    def _fetch_json(self, url, timeout=8):
         response = requests.get(url, timeout=timeout)
         response.raise_for_status()
         return response.json()
@@ -66,52 +66,129 @@ class KlipperFarmStatus(BasePlugin):
             return maybe_relative
         return urljoin(base.rstrip("/") + "/", maybe_relative.lstrip("/"))
 
+    def _rewrite_localhost(self, base, url):
+        if not url:
+            return ""
+        base_p = urlparse(base)
+        url_p = urlparse(url)
+
+        if url_p.hostname not in ("127.0.0.1", "localhost"):
+            return url
+
+        host = base_p.hostname or url_p.hostname
+        port = url_p.port
+        scheme = url_p.scheme or base_p.scheme or "http"
+
+        netloc = host
+        if port:
+            netloc = f"{host}:{port}"
+
+        return urlunparse((
+            scheme,
+            netloc,
+            url_p.path,
+            url_p.params,
+            url_p.query,
+            url_p.fragment,
+        ))
+
+    def _extract_snapshot_candidates_from_webcams(self, base, webcams):
+        candidates = []
+        for webcam in webcams or []:
+            snapshot_url = (
+                webcam.get("snapshot_url")
+                or webcam.get("snapshotUrl")
+                or webcam.get("urlSnapshot")
+                or ""
+            )
+            stream_url = (
+                webcam.get("stream_url")
+                or webcam.get("streamUrl")
+                or webcam.get("urlStream")
+                or ""
+            )
+
+            if snapshot_url:
+                resolved = self._rewrite_localhost(base, self._resolve_url(base, snapshot_url))
+                if resolved:
+                    candidates.append(resolved)
+
+            if stream_url and "action=stream" in stream_url:
+                snap_guess = stream_url.replace("action=stream", "action=snapshot")
+                resolved = self._rewrite_localhost(base, self._resolve_url(base, snap_guess))
+                if resolved:
+                    candidates.append(resolved)
+        return candidates
+
     def _candidate_snapshot_urls(self, moonraker_url):
         base = (moonraker_url or "").strip().rstrip("/")
         return [
             f"{base}/webcam/?action=snapshot",
             f"{base}/webcam?action=snapshot",
+            f"{base}/webcam/snapshot",
             f"{base}/snapshot",
         ]
 
-    def _get_webcam_snapshot_url(self, moonraker_url):
+    def _probe_snapshot_url(self, url):
+        if not url:
+            return False
+        try:
+            response = requests.get(url, timeout=5, stream=True)
+            response.raise_for_status()
+            content_type = (response.headers.get("content-type") or "").lower()
+            response.close()
+            return content_type.startswith("image/") or response.status_code == 200
+        except Exception:
+            return False
+
+    def _get_snapshot_url(self, moonraker_url):
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             return ""
 
+        candidates = []
+
         try:
             data = self._fetch_json(f"{base}/server/webcams/list", timeout=self.JSON_TIMEOUT)
             webcams = data.get("result", {}).get("webcams", []) or []
-            for webcam in webcams:
-                snapshot_url = (
-                    webcam.get("snapshot_url")
-                    or webcam.get("urlSnapshot")
-                    or webcam.get("snapshotUrl")
-                    or ""
-                )
-                resolved = self._resolve_url(base, snapshot_url)
-                if resolved:
-                    return resolved
+            candidates.extend(self._extract_snapshot_candidates_from_webcams(base, webcams))
         except Exception:
             pass
 
-        for candidate in self._candidate_snapshot_urls(base):
-            try:
-                response = requests.get(candidate, timeout=5, stream=True)
-                response.raise_for_status()
-                ctype = (response.headers.get("content-type") or "").lower()
-                if "image/" in ctype or response.status_code == 200:
-                    response.close()
-                    return candidate
-            except Exception:
-                continue
+        try:
+            data = self._fetch_json(
+                f"{base}/server/database/item?namespace=webcams",
+                timeout=self.JSON_TIMEOUT,
+            )
+            value = data.get("result", {}).get("value", {})
+            if isinstance(value, dict):
+                webcams = list(value.values())
+            elif isinstance(value, list):
+                webcams = value
+            else:
+                webcams = []
+            candidates.extend(self._extract_snapshot_candidates_from_webcams(base, webcams))
+        except Exception:
+            pass
+
+        candidates.extend(self._candidate_snapshot_urls(base))
+
+        seen = set()
+        unique_candidates = []
+        for candidate in candidates:
+            if candidate and candidate not in seen:
+                seen.add(candidate)
+                unique_candidates.append(candidate)
+
+        for candidate in unique_candidates:
+            if self._probe_snapshot_url(candidate):
+                return candidate
 
         return ""
 
     def _fetch_snapshot_data_url(self, snapshot_url):
         if not snapshot_url:
             return ""
-
         try:
             response = requests.get(snapshot_url, timeout=self.SNAPSHOT_TIMEOUT)
             response.raise_for_status()
@@ -265,11 +342,13 @@ class KlipperFarmStatus(BasePlugin):
                 except Exception:
                     pass
 
-            printer["snapshot_url"] = self._get_webcam_snapshot_url(base)
+            printer["snapshot_url"] = self._get_snapshot_url(base)
             printer["snapshot_data_url"] = self._fetch_snapshot_data_url(printer["snapshot_url"])
 
-            if not printer["snapshot_data_url"] and not printer["message"]:
-                printer["message"] = "Snapshot fetch failed"
+            if not printer["snapshot_data_url"]:
+                printer["message"] = (
+                    f"{printer['message']} | cam:{printer['snapshot_url'] or 'not-found'}"
+                ).strip(" |")
 
         except Exception as e:
             printer["message"] = str(e)

@@ -1,6 +1,5 @@
 from plugins.base_plugin.base_plugin import BasePlugin
 from datetime import datetime
-from urllib.parse import urljoin, urlparse, urlunparse
 import requests
 import json
 import base64
@@ -51,154 +50,100 @@ def format_temp(current, target):
 
 class KlipperFarmStatus(BasePlugin):
     JSON_TIMEOUT = 8
-    SNAPSHOT_TIMEOUT = 10
+    IMAGE_TIMEOUT = 12
+    STREAM_READ_CHUNKS = 256
+    STREAM_CHUNK_SIZE = 1024 * 8
+    STREAM_MAX_BYTES = 1024 * 1024 * 3
 
     def _fetch_json(self, url, timeout=8):
         response = requests.get(url, timeout=timeout)
         response.raise_for_status()
         return response.json()
 
-    def _resolve_url(self, base, maybe_relative):
-        if not maybe_relative:
-            return ""
-        parsed = urlparse(maybe_relative)
-        if parsed.scheme and parsed.netloc:
-            return maybe_relative
-        return urljoin(base.rstrip("/") + "/", maybe_relative.lstrip("/"))
-
-    def _rewrite_localhost(self, base, url):
-        if not url:
-            return ""
-        base_p = urlparse(base)
-        url_p = urlparse(url)
-
-        if url_p.hostname not in ("127.0.0.1", "localhost"):
-            return url
-
-        host = base_p.hostname or url_p.hostname
-        port = url_p.port
-        scheme = url_p.scheme or base_p.scheme or "http"
-
-        netloc = host
-        if port:
-            netloc = f"{host}:{port}"
-
-        return urlunparse((
-            scheme,
-            netloc,
-            url_p.path,
-            url_p.params,
-            url_p.query,
-            url_p.fragment,
-        ))
-
-    def _extract_snapshot_candidates_from_webcams(self, base, webcams):
-        candidates = []
-        for webcam in webcams or []:
-            snapshot_url = (
-                webcam.get("snapshot_url")
-                or webcam.get("snapshotUrl")
-                or webcam.get("urlSnapshot")
-                or ""
-            )
-            stream_url = (
-                webcam.get("stream_url")
-                or webcam.get("streamUrl")
-                or webcam.get("urlStream")
-                or ""
-            )
-
-            if snapshot_url:
-                resolved = self._rewrite_localhost(base, self._resolve_url(base, snapshot_url))
-                if resolved:
-                    candidates.append(resolved)
-
-            if stream_url and "action=stream" in stream_url:
-                snap_guess = stream_url.replace("action=stream", "action=snapshot")
-                resolved = self._rewrite_localhost(base, self._resolve_url(base, snap_guess))
-                if resolved:
-                    candidates.append(resolved)
-        return candidates
-
-    def _candidate_snapshot_urls(self, moonraker_url):
-        base = (moonraker_url or "").strip().rstrip("/")
-        return [
-            f"{base}/webcam/?action=snapshot",
-            f"{base}/webcam?action=snapshot",
-            f"{base}/webcam/snapshot",
-            f"{base}/snapshot",
-        ]
-
-    def _probe_snapshot_url(self, url):
-        if not url:
-            return False
-        try:
-            response = requests.get(url, timeout=5, stream=True)
-            response.raise_for_status()
-            content_type = (response.headers.get("content-type") or "").lower()
-            response.close()
-            return content_type.startswith("image/") or response.status_code == 200
-        except Exception:
-            return False
-
-    def _get_snapshot_url(self, moonraker_url):
+    def _build_stream_url(self, moonraker_url):
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             return ""
+        return f"{base}/webcam/?action=stream"
 
-        candidates = []
+    def _build_snapshot_url(self, stream_url):
+        if not stream_url:
+            return ""
+        if "action=stream" in stream_url:
+            return stream_url.replace("action=stream", "action=snapshot")
+        return stream_url.rstrip("/") + "?action=snapshot"
 
-        try:
-            data = self._fetch_json(f"{base}/server/webcams/list", timeout=self.JSON_TIMEOUT)
-            webcams = data.get("result", {}).get("webcams", []) or []
-            candidates.extend(self._extract_snapshot_candidates_from_webcams(base, webcams))
-        except Exception:
-            pass
+    def _bytes_to_data_url(self, image_bytes, content_type="image/jpeg"):
+        if not image_bytes:
+            return ""
+        encoded = base64.b64encode(image_bytes).decode("ascii")
+        return f"data:{content_type};base64,{encoded}"
 
-        try:
-            data = self._fetch_json(
-                f"{base}/server/database/item?namespace=webcams",
-                timeout=self.JSON_TIMEOUT,
-            )
-            value = data.get("result", {}).get("value", {})
-            if isinstance(value, dict):
-                webcams = list(value.values())
-            elif isinstance(value, list):
-                webcams = value
-            else:
-                webcams = []
-            candidates.extend(self._extract_snapshot_candidates_from_webcams(base, webcams))
-        except Exception:
-            pass
-
-        candidates.extend(self._candidate_snapshot_urls(base))
-
-        seen = set()
-        unique_candidates = []
-        for candidate in candidates:
-            if candidate and candidate not in seen:
-                seen.add(candidate)
-                unique_candidates.append(candidate)
-
-        for candidate in unique_candidates:
-            if self._probe_snapshot_url(candidate):
-                return candidate
-
-        return ""
-
-    def _fetch_snapshot_data_url(self, snapshot_url):
+    def _fetch_direct_snapshot(self, snapshot_url):
         if not snapshot_url:
             return ""
         try:
-            response = requests.get(snapshot_url, timeout=self.SNAPSHOT_TIMEOUT)
+            response = requests.get(snapshot_url, timeout=self.IMAGE_TIMEOUT)
             response.raise_for_status()
             content_type = response.headers.get("content-type", "image/jpeg")
             if not content_type.startswith("image/"):
                 content_type = "image/jpeg"
-            encoded = base64.b64encode(response.content).decode("ascii")
-            return f"data:{content_type};base64,{encoded}"
+            return self._bytes_to_data_url(response.content, content_type)
         except Exception:
             return ""
+
+    def _fetch_first_frame_from_mjpeg(self, stream_url):
+        if not stream_url:
+            return ""
+
+        try:
+            response = requests.get(stream_url, timeout=self.IMAGE_TIMEOUT, stream=True)
+            response.raise_for_status()
+
+            buffer = b""
+            total_bytes = 0
+            chunk_count = 0
+
+            for chunk in response.iter_content(chunk_size=self.STREAM_CHUNK_SIZE):
+                if not chunk:
+                    continue
+
+                buffer += chunk
+                total_bytes += len(chunk)
+                chunk_count += 1
+
+                start = buffer.find(b"\xff\xd8")
+                end = buffer.find(b"\xff\xd9", start + 2 if start != -1 else 0)
+
+                if start != -1 and end != -1:
+                    jpg = buffer[start:end + 2]
+                    response.close()
+                    return self._bytes_to_data_url(jpg, "image/jpeg")
+
+                if len(buffer) > self.STREAM_MAX_BYTES:
+                    buffer = buffer[-262144:]
+
+                if chunk_count >= self.STREAM_READ_CHUNKS or total_bytes >= self.STREAM_MAX_BYTES:
+                    break
+
+            response.close()
+            return ""
+        except Exception:
+            return ""
+
+    def _get_snapshot_from_stream(self, moonraker_url):
+        stream_url = self._build_stream_url(moonraker_url)
+        snapshot_url = self._build_snapshot_url(stream_url)
+
+        direct = self._fetch_direct_snapshot(snapshot_url)
+        if direct:
+            return direct, snapshot_url, "snapshot"
+
+        mjpeg_frame = self._fetch_first_frame_from_mjpeg(stream_url)
+        if mjpeg_frame:
+            return mjpeg_frame, stream_url, "stream-frame"
+
+        return "", stream_url, "failed"
 
     def _fetch_printer(self, name, moonraker_url, include_spool=True):
         base = (moonraker_url or "").strip().rstrip("/")
@@ -213,8 +158,9 @@ class KlipperFarmStatus(BasePlugin):
         printer = {
             "name": name,
             "url": base,
-            "snapshot_url": "",
             "snapshot_data_url": "",
+            "snapshot_source": "",
+            "snapshot_mode": "",
             "connected": False,
             "state": "offline",
             "status_label": "Offline",
@@ -342,13 +288,14 @@ class KlipperFarmStatus(BasePlugin):
                 except Exception:
                     pass
 
-            printer["snapshot_url"] = self._get_snapshot_url(base)
-            printer["snapshot_data_url"] = self._fetch_snapshot_data_url(printer["snapshot_url"])
+            snapshot_data_url, snapshot_source, snapshot_mode = self._get_snapshot_from_stream(base)
+            printer["snapshot_data_url"] = snapshot_data_url
+            printer["snapshot_source"] = snapshot_source
+            printer["snapshot_mode"] = snapshot_mode
 
-            if not printer["snapshot_data_url"]:
-                printer["message"] = (
-                    f"{printer['message']} | cam:{printer['snapshot_url'] or 'not-found'}"
-                ).strip(" |")
+            if not snapshot_data_url:
+                cam_msg = f"cam fetch failed: {snapshot_source}"
+                printer["message"] = f"{printer['message']} | {cam_msg}".strip(" |")
 
         except Exception as e:
             printer["message"] = str(e)
@@ -382,8 +329,9 @@ class KlipperFarmStatus(BasePlugin):
                 printers.append({
                     "name": name,
                     "url": "",
-                    "snapshot_url": "",
                     "snapshot_data_url": "",
+                    "snapshot_source": "",
+                    "snapshot_mode": "",
                     "connected": False,
                     "state": "offline",
                     "status_label": "Missing URL",

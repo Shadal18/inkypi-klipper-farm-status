@@ -84,8 +84,8 @@ body {
   min-height: 0;
   display: grid;
   gap: 10px;
-  align-content: stretch;
-  grid-auto-rows: minmax(0, 1fr);
+  align-content: start;
+  grid-auto-rows: minmax(0, auto);
 }
 
 .cards-count-1 {
@@ -112,12 +112,11 @@ body {
 
 .card {
   min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px;
+  align-items: start;
   gap: 12px;
-  padding: 12px 12px 10px;
+  padding: 12px;
   box-sizing: border-box;
   border-radius: 18px;
   overflow: hidden;
@@ -153,76 +152,56 @@ body {
 
 .card-main {
   min-width: 0;
-  min-height: 0;
-  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
 .card-side {
-  flex: 0 0 140px;
-  width: 140px;
-  min-width: 140px;
-  max-width: 140px;
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
 }
 
-.webcam-frame {
-  position: relative;
-  width: 140px;
-  height: 105px;
-  min-width: 140px;
-  max-width: 140px;
-  min-height: 105px;
-  max-height: 105px;
-  border-radius: 14px;
+.snapshot-box {
+  width: 90px;
+  height: 90px;
+  min-width: 90px;
+  min-height: 90px;
+  max-width: 90px;
+  max-height: 90px;
+  border-radius: 12px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.28);
   border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.webcam-stream {
-  display: block;
-  width: 100%;
-  height: 100%;
+.snapshot-img {
+  width: 90px;
+  height: 90px;
+  min-width: 90px;
+  min-height: 90px;
+  max-width: 90px;
+  max-height: 90px;
   object-fit: cover;
   object-position: center;
+  display: block;
   background: rgba(0, 0, 0, 0.08);
 }
 
-.webcam-label {
-  position: absolute;
-  right: 8px;
-  bottom: 8px;
-  padding: 5px 7px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.52);
-  color: #fff;
-  font-size: 10px;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.webcam-empty {
-  width: 100%;
-  height: 100%;
-  min-height: 105px;
-  max-height: 105px;
-  display: grid;
-  place-items: center;
-  text-align: center;
-  padding: 12px;
-  box-sizing: border-box;
-  font-size: 12px;
-  line-height: 1.3;
+.snapshot-empty {
+  font-size: 11px;
+  line-height: 1.2;
   font-weight: 700;
-  opacity: 0.72;
-  background: rgba(255, 255, 255, 0.2);
+  text-align: center;
+  color: rgba(0, 0, 0, 0.58);
+  padding: 6px;
 }
 
 .card-header {
@@ -377,8 +356,9 @@ body {
 .cards-count-8 .card,
 .cards-count-9 .card,
 .cards-count-10 .card {
-  padding: 10px 10px 9px;
+  grid-template-columns: minmax(0, 1fr) 72px;
   gap: 8px;
+  padding: 10px;
   border-radius: 14px;
 }
 
@@ -388,34 +368,29 @@ body {
 .cards-count-8 .card-side,
 .cards-count-9 .card-side,
 .cards-count-10 .card-side {
-  flex-basis: 104px;
-  width: 104px;
-  min-width: 104px;
-  max-width: 104px;
+  width: 72px;
+  min-width: 72px;
+  max-width: 72px;
 }
 
-.cards-count-5 .webcam-frame,
-.cards-count-6 .webcam-frame,
-.cards-count-7 .webcam-frame,
-.cards-count-8 .webcam-frame,
-.cards-count-9 .webcam-frame,
-.cards-count-10 .webcam-frame {
-  width: 104px;
-  height: 78px;
-  min-width: 104px;
-  max-width: 104px;
-  min-height: 78px;
-  max-height: 78px;
-}
-
-.cards-count-5 .webcam-empty,
-.cards-count-6 .webcam-empty,
-.cards-count-7 .webcam-empty,
-.cards-count-8 .webcam-empty,
-.cards-count-9 .webcam-empty,
-.cards-count-10 .webcam-empty {
-  min-height: 78px;
-  max-height: 78px;
+.cards-count-5 .snapshot-box,
+.cards-count-6 .snapshot-box,
+.cards-count-7 .snapshot-box,
+.cards-count-8 .snapshot-box,
+.cards-count-9 .snapshot-box,
+.cards-count-10 .snapshot-box,
+.cards-count-5 .snapshot-img,
+.cards-count-6 .snapshot-img,
+.cards-count-7 .snapshot-img,
+.cards-count-8 .snapshot-img,
+.cards-count-9 .snapshot-img,
+.cards-count-10 .snapshot-img {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  min-height: 72px;
+  max-width: 72px;
+  max-height: 72px;
 }
 
 .cards-count-5 .printer-name,
@@ -481,18 +456,14 @@ body {
 .cards-count-7 .message,
 .cards-count-8 .message,
 .cards-count-9 .message,
-.cards-count-10 .message {
+.cards-count-10 .message,
+.cards-count-5 .snapshot-empty,
+.cards-count-6 .snapshot-empty,
+.cards-count-7 .snapshot-empty,
+.cards-count-8 .snapshot-empty,
+.cards-count-9 .snapshot-empty,
+.cards-count-10 .snapshot-empty {
   font-size: 10px;
-}
-
-.cards-count-5 .webcam-label,
-.cards-count-6 .webcam-label,
-.cards-count-7 .webcam-label,
-.cards-count-8 .webcam-label,
-.cards-count-9 .webcam-label,
-.cards-count-10 .webcam-label {
-  font-size: 9px;
-  padding: 4px 6px;
 }
 
 @media (max-width: 900px) {
@@ -520,24 +491,10 @@ body {
   }
 
   .card {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr) 90px;
   }
 
   .card-side {
-    width: 100%;
-    min-width: 0;
-    max-width: none;
-    flex: 0 0 auto;
-    justify-content: flex-start;
-  }
-
-  .webcam-frame,
-  .webcam-empty {
-    width: 100%;
-    max-width: none;
-    min-width: 0;
-    height: 180px;
-    min-height: 180px;
-    max-height: none;
+    justify-content: flex-end;
   }
 }

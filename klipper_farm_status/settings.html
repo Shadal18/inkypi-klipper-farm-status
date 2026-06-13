@@ -702,8 +702,8 @@
     }
 
     const printerDefaults = [
-      { name: "K1 Max", url: "http://k1max.local:7125", camera_snapshot_url: "", enabled: true },
-      { name: "AD5X", url: "http://ad5x.local:7125", camera_snapshot_url: "", enabled: true },
+      { name: "Printer 1", url: "http://printer-url.local:7125", camera_snapshot_url: "", enabled: true },
+      { name: "Printer 2", url: "http://printer-url.local:7125", camera_snapshot_url: "", enabled: true },
     ]
 
     const printersContainer = document.getElementById("printers_container")
@@ -770,7 +770,7 @@
             <input
               type="text"
               class="kf-input printer-name-input"
-              placeholder="K1 Max"
+              placeholder="Printer name"
               value="${printer.name || ""}"
             />
           </div>
@@ -780,7 +780,7 @@
             <input
               type="text"
               class="kf-input printer-url-input"
-              placeholder="http://printer.local:7125"
+              placeholder="http://printer-url.local:7125"
               value="${printer.url || ""}"
             />
           </div>

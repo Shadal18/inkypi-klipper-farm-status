@@ -83,10 +83,9 @@ body {
 .cards {
   min-height: 0;
   display: grid;
-  gap: 12px;
+  gap: 10px;
   align-content: start;
-  grid-auto-rows: minmax(0, auto);
-  overflow: hidden;
+  grid-auto-rows: auto;
 }
 
 .cards-count-1 {
@@ -113,17 +112,17 @@ body {
 
 .card {
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 128px;
-  align-items: start;
-  gap: 18px;
-  padding: 14px 16px;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 12px;
+  padding: 12px 12px 12px;
   box-sizing: border-box;
   border-radius: 18px;
-  overflow: hidden;
+  overflow: visible;
   background: rgba(0, 0, 0, 0.05);
   border-top: 8px solid rgba(0, 0, 0, 0.16);
-  min-height: 188px;
 }
 
 .card.state-printing {
@@ -518,4 +517,21 @@ body {
     max-width: 112px;
     max-height: 112px;
   }
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-content: start;
+}
+
+.card-main {
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
 }

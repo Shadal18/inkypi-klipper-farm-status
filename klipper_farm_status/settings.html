@@ -509,7 +509,7 @@
             <button type="button" id="add_printer_btn" class="kf-add-printer-btn">+ Add Printer</button>
             <p class="kf-note">
               Add one Moonraker endpoint per printer. Camera snapshot URL is optional and only needed when the default
-              /webcam/?action=snapshot path is not correct for that printer.
+              /webcam/?action=snapshot path is not correct for that printer. [web:657]
             </p>
           </div>
         </div>
@@ -701,10 +701,7 @@
       show_message: "true",
     }
 
-    const printerDefaults = [
-      { name: "", url: "", camera_snapshot_url: "", enabled: true },
-      { name: "", url: "", camera_snapshot_url: "", enabled: true },
-    ]
+    const printerDefaults = [{ name: "", url: "", camera_snapshot_url: "", enabled: true }]
 
     const printersContainer = document.getElementById("printers_container")
     const printersJsonInput = document.getElementById("printers_json")

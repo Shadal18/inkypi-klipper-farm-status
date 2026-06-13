@@ -8,7 +8,7 @@
     --kf-text: var(--text-primary, var(--color-text, #0f172a));
     --kf-text-muted: var(--text-secondary, var(--color-text-secondary, #475569));
     --kf-text-soft: var(--text-muted, #64748b);
-    --kf-primary: var(--accent-color, #14b8a6));
+    --kf-primary: var(--accent-color, #14b8a6);
     --kf-info: var(--info-color, #3b82f6);
     --kf-shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
     --kf-radius-xl: 18px;
@@ -508,8 +508,8 @@
             <div id="printers_container" class="kf-printers-container"></div>
             <button type="button" id="add_printer_btn" class="kf-add-printer-btn">+ Add Printer</button>
             <p class="kf-note">
-              Add one Moonraker endpoint per printer. Camera URLs are optional overrides for printers that use custom
-              webcam ports or paths. [web:594][web:598]
+              Add one Moonraker endpoint per printer. Camera snapshot URL is optional and only needed when the default
+              /webcam/?action=snapshot path is not correct for that printer. [web:594][web:612]
             </p>
           </div>
         </div>
@@ -702,20 +702,8 @@
     }
 
     const printerDefaults = [
-      {
-        name: "K1 Max",
-        url: "http://k1max.local:7125",
-        camera_snapshot_url: "",
-        camera_stream_url: "",
-        enabled: true,
-      },
-      {
-        name: "AD5X",
-        url: "http://ad5x.local:7125",
-        camera_snapshot_url: "",
-        camera_stream_url: "",
-        enabled: true,
-      },
+      { name: "K1 Max", url: "http://k1max.local:7125", camera_snapshot_url: "", enabled: true },
+      { name: "AD5X", url: "http://ad5x.local:7125", camera_snapshot_url: "", enabled: true },
     ]
 
     const printersContainer = document.getElementById("printers_container")
@@ -754,7 +742,6 @@
         name: card.querySelector(".printer-name-input")?.value?.trim() || "",
         url: card.querySelector(".printer-url-input")?.value?.trim() || "",
         camera_snapshot_url: card.querySelector(".printer-camera-snapshot-input")?.value?.trim() || "",
-        camera_stream_url: card.querySelector(".printer-camera-stream-input")?.value?.trim() || "",
         enabled: (card.querySelector(".printer-enabled-input")?.value || "true") === "true",
       }))
       printersJsonInput.value = JSON.stringify(printers)
@@ -805,16 +792,6 @@
               class="kf-input printer-camera-snapshot-input"
               placeholder="http://printer.local:4408/webcam/?action=snapshot"
               value="${printer.camera_snapshot_url || ""}"
-            />
-          </div>
-
-          <div class="kf-field">
-            <label class="kf-label">Camera stream URL (optional)</label>
-            <input
-              type="text"
-              class="kf-input printer-camera-stream-input"
-              placeholder="http://printer.local:4408/webcam/?action=stream"
-              value="${printer.camera_stream_url || ""}"
             />
           </div>
 
@@ -882,13 +859,7 @@
 
     addPrinterBtn.addEventListener("click", () => {
       createPrinterCard(
-        {
-          name: "",
-          url: "",
-          camera_snapshot_url: "",
-          camera_stream_url: "",
-          enabled: true,
-        },
+        { name: "", url: "", camera_snapshot_url: "", enabled: true },
         printersContainer.querySelectorAll(".kf-printer-card").length,
       )
       refreshPrinterTitles()

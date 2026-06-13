@@ -51,7 +51,7 @@ def format_temp(current, target):
     if t > 0:
         return f"{round(c)}° / {round(t)}°"
     return f"{round(c)}°"
-
+ 
 
 class KlipperFarmStatus(BasePlugin):
     JSON_TIMEOUT = 8
@@ -73,11 +73,7 @@ class KlipperFarmStatus(BasePlugin):
 
         return f"{parsed.scheme}://{parsed.hostname}"
 
-    def _build_stream_url(self, moonraker_url, custom_stream_url=""):
-        custom_stream_url = (custom_stream_url or "").strip()
-        if custom_stream_url:
-            return custom_stream_url
-
+    def _build_stream_url(self, moonraker_url):
         webcam_base = self._build_webcam_base_url(moonraker_url)
         if not webcam_base:
             return ""
@@ -124,22 +120,12 @@ class KlipperFarmStatus(BasePlugin):
             )
             return "", ""
 
-    def _empty_printer(
-        self,
-        name,
-        base="",
-        status_label="Offline",
-        state_class="offline",
-        message="",
-        custom_snapshot_url="",
-        custom_stream_url="",
-    ):
+    def _empty_printer(self, name, base="", status_label="Offline", state_class="offline", message="", custom_snapshot_url=""):
         return {
             "name": name,
             "url": base,
             "camera_snapshot_url": (custom_snapshot_url or "").strip(),
-            "camera_stream_url": (custom_stream_url or "").strip(),
-            "stream_url": self._build_stream_url(base, custom_stream_url),
+            "stream_url": self._build_stream_url(base),
             "snapshot_url": self._build_snapshot_url(base, custom_snapshot_url),
             "snapshot_base64": "",
             "snapshot_mime": "image/jpeg",
@@ -166,18 +152,9 @@ class KlipperFarmStatus(BasePlugin):
             "spool_color": "",
         }
 
-    def _fetch_printer(
-        self,
-        name,
-        moonraker_url,
-        include_spool=True,
-        include_image=True,
-        camera_snapshot_url="",
-        camera_stream_url="",
-    ):
+    def _fetch_printer(self, name, moonraker_url, include_spool=True, include_image=True, camera_snapshot_url=""):
         base = (moonraker_url or "").strip().rstrip("/")
         camera_snapshot_url = (camera_snapshot_url or "").strip()
-        camera_stream_url = (camera_stream_url or "").strip()
 
         printer = self._empty_printer(
             name=name,
@@ -186,7 +163,6 @@ class KlipperFarmStatus(BasePlugin):
             state_class="offline",
             message="",
             custom_snapshot_url=camera_snapshot_url,
-            custom_stream_url=camera_stream_url,
         )
 
         if not base:
@@ -371,7 +347,6 @@ class KlipperFarmStatus(BasePlugin):
             name = (printer_cfg.get("name") or f"Printer {idx}").strip()
             url = (printer_cfg.get("url") or "").strip()
             camera_snapshot_url = (printer_cfg.get("camera_snapshot_url") or "").strip()
-            camera_stream_url = (printer_cfg.get("camera_stream_url") or "").strip()
 
             printers.append(
                 self._fetch_printer(
@@ -380,7 +355,6 @@ class KlipperFarmStatus(BasePlugin):
                     include_spool=include_spool,
                     include_image=include_image,
                     camera_snapshot_url=camera_snapshot_url,
-                    camera_stream_url=camera_stream_url,
                 )
             )
 

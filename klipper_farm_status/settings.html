@@ -198,7 +198,8 @@
   }
 
   .kf-input,
-  .klipper-farm-settings input[type="text"] {
+  .klipper-farm-settings input[type="text"],
+  .klipper-farm-settings select {
     width: 100%;
     min-height: 46px;
     padding: 0 14px;
@@ -218,7 +219,8 @@
   }
 
   .kf-input:focus,
-  .klipper-farm-settings input:focus {
+  .klipper-farm-settings input:focus,
+  .klipper-farm-settings select:focus {
     border-color: color-mix(in srgb, var(--kf-primary) 45%, transparent);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--kf-primary) 14%, transparent);
   }
@@ -479,7 +481,7 @@
         <div class="kf-metric">
           <div class="kf-metric-label">Display</div>
           <div class="kf-metric-value">Farm</div>
-          <div class="kf-metric-sub">Status, progress, temps, and spool data</div>
+          <div class="kf-metric-sub">Status, progress, temps, spool data, and optional camera snapshots</div>
         </div>
       </div>
     </section>
@@ -521,6 +523,21 @@
       </div>
       <div class="kf-section-body">
         <div class="kf-toggle-grid">
+          <div class="kf-toggle-card">
+            <div class="kf-toggle-row">
+              <div class="kf-toggle-control">
+                <input type="checkbox" id="show_image_toggle" class="toggle-checkbox" />
+              </div>
+              <div class="kf-toggle-text">
+                <div class="kf-toggle-title">Show Camera Image</div>
+                <div class="kf-toggle-copy">
+                  Display a still snapshot from each printer webcam on the right side of the card.
+                </div>
+              </div>
+            </div>
+            <input type="hidden" id="show_image" name="show_image" value="true" />
+          </div>
+
           <div class="kf-toggle-card">
             <div class="kf-toggle-row">
               <div class="kf-toggle-control">
@@ -668,6 +685,7 @@
   document.addEventListener("DOMContentLoaded", () => {
     const defaults = {
       title: "Klipper Farm",
+      show_image: "true",
       show_progress: "true",
       show_filename: "true",
       show_eta: "true",
@@ -834,6 +852,7 @@
       syncPrintersJson()
     })
 
+    initBooleanToggle("show_image", "true")
     initBooleanToggle("show_progress", "true")
     initBooleanToggle("show_filename", "true")
     initBooleanToggle("show_eta", "true")

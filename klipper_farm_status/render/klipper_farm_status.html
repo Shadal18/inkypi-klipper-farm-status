@@ -99,9 +99,13 @@
       </div>
 
       <aside class="card-side">
-        {% if printer.snapshot_data_url %}
+        {% if printer.snapshot_base64 %}
         <div class="webcam-frame">
-          <img class="webcam-stream" src="{{ printer.snapshot_data_url }}" alt="{{ printer.name }} snapshot" />
+          <img
+            class="webcam-stream"
+            src="data:{{ printer.snapshot_mime }};base64,{{ printer.snapshot_base64 | safe }}"
+            alt="{{ printer.name }} snapshot"
+          />
           <div class="webcam-label">Cam</div>
         </div>
         {% else %}

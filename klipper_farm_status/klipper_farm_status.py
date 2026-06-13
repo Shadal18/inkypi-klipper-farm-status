@@ -51,9 +51,6 @@ def format_temp(current, target):
 class KlipperFarmStatus(BasePlugin):
     JSON_TIMEOUT = 8
     IMAGE_TIMEOUT = 12
-    STREAM_READ_CHUNKS = 256
-    STREAM_CHUNK_SIZE = 1024 * 8
-    STREAM_MAX_BYTES = 1024 * 1024 * 3
 
     def _fetch_json(self, url, timeout=8):
         response = requests.get(url, timeout=timeout)
@@ -66,84 +63,25 @@ class KlipperFarmStatus(BasePlugin):
             return ""
         return f"{base}/webcam/?action=stream"
 
-    def _build_snapshot_url(self, stream_url):
-        if not stream_url:
+    def _build_snapshot_url(self, moonraker_url):
+        base = (moonraker_url or "").strip().rstrip("/")
+        if not base:
             return ""
-        if "action=stream" in stream_url:
-            return stream_url.replace("action=stream", "action=snapshot")
-        return stream_url.rstrip("/") + "?action=snapshot"
+        return f"{base}/webcam/?action=snapshot"
 
-    def _bytes_to_data_url(self, image_bytes, content_type="image/jpeg"):
-        if not image_bytes:
-            return ""
-        encoded = base64.b64encode(image_bytes).decode("ascii")
-        return f"data:{content_type};base64,{encoded}"
-
-    def _fetch_direct_snapshot(self, snapshot_url):
+    def _fetch_snapshot_parts(self, snapshot_url):
         if not snapshot_url:
-            return ""
+            return "", ""
         try:
             response = requests.get(snapshot_url, timeout=self.IMAGE_TIMEOUT)
             response.raise_for_status()
-            content_type = response.headers.get("content-type", "image/jpeg")
+            content_type = response.headers.get("content-type", "image/jpeg").strip().lower()
             if not content_type.startswith("image/"):
                 content_type = "image/jpeg"
-            return self._bytes_to_data_url(response.content, content_type)
+            encoded = base64.b64encode(response.content).decode("ascii")
+            return encoded, content_type
         except Exception:
-            return ""
-
-    def _fetch_first_frame_from_mjpeg(self, stream_url):
-        if not stream_url:
-            return ""
-
-        try:
-            response = requests.get(stream_url, timeout=self.IMAGE_TIMEOUT, stream=True)
-            response.raise_for_status()
-
-            buffer = b""
-            total_bytes = 0
-            chunk_count = 0
-
-            for chunk in response.iter_content(chunk_size=self.STREAM_CHUNK_SIZE):
-                if not chunk:
-                    continue
-
-                buffer += chunk
-                total_bytes += len(chunk)
-                chunk_count += 1
-
-                start = buffer.find(b"\xff\xd8")
-                end = buffer.find(b"\xff\xd9", start + 2 if start != -1 else 0)
-
-                if start != -1 and end != -1:
-                    jpg = buffer[start:end + 2]
-                    response.close()
-                    return self._bytes_to_data_url(jpg, "image/jpeg")
-
-                if len(buffer) > self.STREAM_MAX_BYTES:
-                    buffer = buffer[-262144:]
-
-                if chunk_count >= self.STREAM_READ_CHUNKS or total_bytes >= self.STREAM_MAX_BYTES:
-                    break
-
-            response.close()
-            return ""
-        except Exception:
-            return ""
-
-    def _get_snapshot_from_stream(self, moonraker_url):
-        stream_url = self._build_stream_url(moonraker_url)
-        snapshot_url = self._build_snapshot_url(stream_url)
-
-        direct = self._fetch_direct_snapshot(snapshot_url)
-        if direct:
-            return direct, snapshot_url, "snapshot"
-
-        mjpeg_frame = self._fetch_first_frame_from_mjpeg(stream_url)
-        if mjpeg_frame:
-            return mjpeg_frame, stream_url, "stream-frame"
-
-        return "", stream_url, "failed"
+            return "", ""
 
     def _fetch_printer(self, name, moonraker_url, include_spool=True):
         base = (moonraker_url or "").strip().rstrip("/")
@@ -158,9 +96,10 @@ class KlipperFarmStatus(BasePlugin):
         printer = {
             "name": name,
             "url": base,
-            "snapshot_data_url": "",
-            "snapshot_source": "",
-            "snapshot_mode": "",
+            "stream_url": self._build_stream_url(base),
+            "snapshot_url": self._build_snapshot_url(base),
+            "snapshot_base64": "",
+            "snapshot_mime": "image/jpeg",
             "connected": False,
             "state": "offline",
             "status_label": "Offline",
@@ -288,13 +227,12 @@ class KlipperFarmStatus(BasePlugin):
                 except Exception:
                     pass
 
-            snapshot_data_url, snapshot_source, snapshot_mode = self._get_snapshot_from_stream(base)
-            printer["snapshot_data_url"] = snapshot_data_url
-            printer["snapshot_source"] = snapshot_source
-            printer["snapshot_mode"] = snapshot_mode
+            snapshot_base64, snapshot_mime = self._fetch_snapshot_parts(printer["snapshot_url"])
+            printer["snapshot_base64"] = snapshot_base64
+            printer["snapshot_mime"] = snapshot_mime or "image/jpeg"
 
-            if not snapshot_data_url:
-                cam_msg = f"cam fetch failed: {snapshot_source}"
+            if not printer["snapshot_base64"]:
+                cam_msg = f"cam fetch failed: {printer['snapshot_url']}"
                 printer["message"] = f"{printer['message']} | {cam_msg}".strip(" |")
 
         except Exception as e:
@@ -329,9 +267,10 @@ class KlipperFarmStatus(BasePlugin):
                 printers.append({
                     "name": name,
                     "url": "",
-                    "snapshot_data_url": "",
-                    "snapshot_source": "",
-                    "snapshot_mode": "",
+                    "stream_url": "",
+                    "snapshot_url": "",
+                    "snapshot_base64": "",
+                    "snapshot_mime": "image/jpeg",
                     "connected": False,
                     "state": "offline",
                     "status_label": "Missing URL",

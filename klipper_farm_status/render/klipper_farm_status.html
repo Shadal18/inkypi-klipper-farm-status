@@ -1,97 +1,117 @@
-<article class="card state-{{ printer.state_class }}">
-  <div class="card-main">
-    <div class="card-header">
-      <div class="card-header-main">
-        <div class="printer-name">{{ printer.name }}</div>
-        <div class="printer-state">{{ printer.status_label }}</div>
-      </div>
-
-      {% if show_progress %}
-      <div class="progress-badge">{{ printer.progress }}%</div>
-      {% endif %}
+{% extends "plugin.html" %} {% block content %}
+<div
+  class="screen"
+  style="color: {{ plugin_settings.text_color }}; background-color: {{ plugin_settings.background_color }};"
+>
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="title">{{ title }}</div>
     </div>
 
-    {% if show_filename and printer.filename %}
-    <div class="filename">{{ printer.filename }}</div>
-    {% endif %}
-
-    <div class="metrics">
-      {% if show_eta %}
-      <div class="metric">
-        <span class="metric-label">ETA</span>
-        <span class="metric-value">{{ printer.eta }}</span>
-      </div>
-      {% endif %} {% if show_layers %}
-      <div class="metric">
-        <span class="metric-label">Layers</span>
-        <span class="metric-value">
-          {% if printer.current_layer is not none and printer.total_layer is not none %} {{ printer.current_layer }}/{{
-          printer.total_layer }} {% else %} — {% endif %}
-        </span>
-      </div>
-      {% endif %} {% if show_temps %}
-      <div class="metric">
-        <span class="metric-label">Nozzle</span>
-        <span class="metric-value">{{ printer.extruder_temp }}</span>
-      </div>
-
-      <div class="metric">
-        <span class="metric-label">Bed</span>
-        <span class="metric-value">{{ printer.bed_temp }}</span>
-      </div>
-      {% endif %}
+    <div class="topbar-right">
+      <div class="summary-chip printing">{{ printing }} printing</div>
+      <div class="summary-chip paused">{{ paused }} paused</div>
+      <div class="summary-chip offline">{{ offline }} offline</div>
+      <div class="summary-chip refresh">Updated {{ updated_label }}</div>
     </div>
+  </div>
 
-    {% if show_spool %}
-    <div class="spool-block">
-      <div
-        class="spool-dot"
-        {%
-        if
-        printer.spool_color
-        %}
-        style="background: #{{ printer.spool_color | replace('#', '') }};"
-        {%
-        endif
-        %}
-      ></div>
+  <div class="cards cards-count-{{ printers|length }}">
+    {% for printer in printers %}
+    <article class="card state-{{ printer.state_class }}">
+      <div class="card-main">
+        <div class="card-header">
+          <div class="card-header-main">
+            <div class="printer-name">{{ printer.name }}</div>
+            <div class="printer-state">{{ printer.status_label }}</div>
+          </div>
 
-      <div class="spool-text">
-        <div class="spool-title">
-          {% if printer.spool_name %} {{ printer.spool_name }} {% elif printer.spool_id %} Spool #{{ printer.spool_id }}
-          {% else %} No active spool {% endif %}
-        </div>
-
-        <div class="spool-meta">
-          {% if show_spool_vendor and printer.spool_vendor %}
-          <span>{{ printer.spool_vendor }}</span>
-          {% endif %} {% if show_spool_material and printer.spool_material %}
-          <span>{% if show_spool_vendor and printer.spool_vendor %} • {% endif %}{{ printer.spool_material }}</span>
-          {% endif %} {% if show_spool_remaining and printer.spool_remaining is not none and printer.spool_id %}
-          <span> • {{ printer.spool_remaining }}g</span>
+          {% if show_progress %}
+          <div class="progress-badge">{{ printer.progress }}%</div>
           {% endif %}
         </div>
-      </div>
-    </div>
-    {% endif %} {% if show_message and printer.message %}
-    <div class="message">{{ printer.message }}</div>
-    {% endif %}
-  </div>
 
-  <div class="card-side">
-    {% if printer.url %}
-    <div class="webcam-frame">
-      <img
-        class="webcam-stream"
-        src="{{ printer.url.rstrip('/') }}/webcam/?action=stream"
-        alt="{{ printer.name }} webcam"
-      />
-      <div class="webcam-label">Cam</div>
-    </div>
-    {% else %}
-    <div class="webcam-frame">
-      <div class="webcam-empty">No cam</div>
-    </div>
-    {% endif %}
+        {% if show_filename and printer.filename %}
+        <div class="filename">{{ printer.filename }}</div>
+        {% endif %}
+
+        <div class="metrics">
+          {% if show_eta %}
+          <div class="metric">
+            <span class="metric-label">ETA</span>
+            <span class="metric-value">{{ printer.eta }}</span>
+          </div>
+          {% endif %} {% if show_layers %}
+          <div class="metric">
+            <span class="metric-label">Layers</span>
+            <span class="metric-value">
+              {% if printer.current_layer is not none and printer.total_layer is not none %} {{ printer.current_layer
+              }}/{{ printer.total_layer }} {% else %} — {% endif %}
+            </span>
+          </div>
+          {% endif %} {% if show_temps %}
+          <div class="metric">
+            <span class="metric-label">Nozzle</span>
+            <span class="metric-value">{{ printer.extruder_temp }}</span>
+          </div>
+
+          <div class="metric">
+            <span class="metric-label">Bed</span>
+            <span class="metric-value">{{ printer.bed_temp }}</span>
+          </div>
+          {% endif %}
+        </div>
+
+        {% if show_spool %}
+        <div class="spool-block">
+          <div
+            class="spool-dot"
+            {%
+            if
+            printer.spool_color
+            %}
+            style="background: #{{ printer.spool_color | replace('#', '') }};"
+            {%
+            endif
+            %}
+          ></div>
+
+          <div class="spool-text">
+            <div class="spool-title">
+              {% if printer.spool_name %} {{ printer.spool_name }} {% elif printer.spool_id %} Spool #{{
+              printer.spool_id }} {% else %} No active spool {% endif %}
+            </div>
+
+            <div class="spool-meta">
+              {% if show_spool_vendor and printer.spool_vendor %}
+              <span>{{ printer.spool_vendor }}</span>
+              {% endif %} {% if show_spool_material and printer.spool_material %}
+              <span>{% if show_spool_vendor and printer.spool_vendor %} • {% endif %}{{ printer.spool_material }}</span>
+              {% endif %} {% if show_spool_remaining and printer.spool_remaining is not none and printer.spool_id %}
+              <span> • {{ printer.spool_remaining }}g</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %} {% if show_message and printer.message %}
+        <div class="message">{{ printer.message }}</div>
+        {% endif %}
+      </div>
+
+      <div class="card-side">
+        {% if printer.webcam_url %}
+        <div class="webcam-frame">
+          <img class="webcam-stream" src="{{ printer.webcam_url }}" alt="{{ printer.name }} webcam" />
+          <div class="webcam-label">Cam</div>
+        </div>
+        {% else %}
+        <div class="webcam-frame">
+          <div class="webcam-empty">No cam</div>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
   </div>
-</article>
+</div>
+{% endblock %}

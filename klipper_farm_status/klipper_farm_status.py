@@ -55,6 +55,12 @@ class KlipperFarmStatus(BasePlugin):
         response.raise_for_status()
         return response.json()
 
+    def _build_webcam_url(self, moonraker_url):
+        base = (moonraker_url or "").strip().rstrip("/")
+        if not base:
+            return ""
+        return f"{base}/webcam/?action=stream"
+
     def _fetch_printer(self, name, moonraker_url, include_spool=True):
         base = moonraker_url.strip().rstrip("/")
         if not base:
@@ -67,6 +73,8 @@ class KlipperFarmStatus(BasePlugin):
 
         printer = {
             "name": name,
+            "url": base,
+            "webcam_url": self._build_webcam_url(base),
             "connected": False,
             "state": "offline",
             "status_label": "Offline",
@@ -231,6 +239,8 @@ class KlipperFarmStatus(BasePlugin):
             if not url:
                 printers.append({
                     "name": name,
+                    "url": "",
+                    "webcam_url": "",
                     "connected": False,
                     "state": "offline",
                     "status_label": "Missing URL",

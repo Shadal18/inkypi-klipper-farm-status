@@ -1,5 +1,6 @@
 from plugins.base_plugin.base_plugin import BasePlugin
 from datetime import datetime
+from urllib.parse import urlparse
 import requests
 import json
 import base64
@@ -60,17 +61,28 @@ class KlipperFarmStatus(BasePlugin):
         response.raise_for_status()
         return response.json()
 
-    def _build_stream_url(self, moonraker_url):
+    def _build_webcam_base_url(self, moonraker_url):
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             return ""
-        return f"{base}/webcam/?action=stream"
+
+        parsed = urlparse(base)
+        if not parsed.scheme or not parsed.hostname:
+            return base
+
+        return f"{parsed.scheme}://{parsed.hostname}"
+
+    def _build_stream_url(self, moonraker_url):
+        webcam_base = self._build_webcam_base_url(moonraker_url)
+        if not webcam_base:
+            return ""
+        return f"{webcam_base}/webcam/?action=stream"
 
     def _build_snapshot_url(self, moonraker_url):
-        base = (moonraker_url or "").strip().rstrip("/")
-        if not base:
+        webcam_base = self._build_webcam_base_url(moonraker_url)
+        if not webcam_base:
             return ""
-        return f"{base}/webcam/?action=snapshot"
+        return f"{webcam_base}/webcam/?action=snapshot"
 
     def _fetch_snapshot_parts(self, snapshot_url):
         if not snapshot_url:

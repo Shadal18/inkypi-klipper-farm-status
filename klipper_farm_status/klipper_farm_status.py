@@ -70,6 +70,7 @@ class KlipperFarmStatus(BasePlugin):
         return f"{base}/webcam/?action=snapshot"
 
     def _fetch_snapshot_parts(self, snapshot_url):
+        print("SNAPSHOT BYTES:", len(response.content), "SNAPSHOT BASE64 LEN:", len(encoded))
         if not snapshot_url:
             return "", ""
         try:
@@ -84,6 +85,7 @@ class KlipperFarmStatus(BasePlugin):
             return "", ""
 
     def _fetch_printer(self, name, moonraker_url, include_spool=True, include_image=True):
+        print("PRINTER SNAPSHOT SET FOR", name, "LEN", len(printer["snapshot_base64"]))
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             raise RuntimeError(f"Moonraker URL missing for printer '{name}'.")

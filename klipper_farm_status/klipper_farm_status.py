@@ -1,7 +1,10 @@
 from plugins.base_plugin.base_plugin import BasePlugin
 from datetime import datetime
+from pathlib import Path
+from urllib.parse import urlparse
 import requests
 import json
+import re
 
 
 def to_bool(value, default=False):
@@ -32,10 +35,8 @@ def format_seconds(seconds):
     seconds = safe_int(seconds, 0)
     if seconds <= 0:
         return "—"
-
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
-
     if hours > 0:
         return f"{hours}h {minutes}m"
     return f"{minutes}m"
@@ -49,20 +50,68 @@ def format_temp(current, target):
     return f"{round(c)}°"
 
 
+def slugify(value):
+    value = (value or "").strip().lower()
+    value = re.sub(r"[^a-z0-9]+", "-", value)
+    return value.strip("-") or "printer"
+
+
 class KlipperFarmStatus(BasePlugin):
+    SNAPSHOT_TIMEOUT = 10
+
     def _fetch_json(self, url, timeout=10):
         response = requests.get(url, timeout=timeout)
         response.raise_for_status()
         return response.json()
 
-    def _build_webcam_url(self, moonraker_url):
+    def _build_snapshot_url(self, moonraker_url):
         base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             return ""
-        return f"{base}/webcam/?action=stream"
+        return f"{base}/webcam/?action=snapshot"
+
+    def _get_snapshot_cache_dir(self):
+        base_dir = Path(__file__).resolve().parent
+        cache_dir = base_dir / "snapshot_cache"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        return cache_dir
+
+    def _guess_extension(self, content_type):
+        ctype = (content_type or "").lower()
+        if "png" in ctype:
+            return ".png"
+        if "webp" in ctype:
+            return ".webp"
+        return ".jpg"
+
+    def _save_snapshot(self, printer_name, snapshot_url):
+        if not snapshot_url:
+            return ""
+
+        cache_dir = self._get_snapshot_cache_dir()
+        safe_name = slugify(printer_name)
+        filename = f"{safe_name}{self._guess_extension('image/jpeg')}"
+        final_path = cache_dir / filename
+
+        try:
+            response = requests.get(snapshot_url, timeout=self.SNAPSHOT_TIMEOUT, stream=True)
+            response.raise_for_status()
+
+            content_type = response.headers.get("content-type", "")
+            ext = self._guess_extension(content_type)
+            final_path = cache_dir / f"{safe_name}{ext}"
+
+            with open(final_path, "wb") as handle:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        handle.write(chunk)
+
+            return str(final_path)
+        except Exception:
+            return ""
 
     def _fetch_printer(self, name, moonraker_url, include_spool=True):
-        base = moonraker_url.strip().rstrip("/")
+        base = (moonraker_url or "").strip().rstrip("/")
         if not base:
             raise RuntimeError(f"Moonraker URL missing for printer '{name}'.")
 
@@ -70,11 +119,13 @@ class KlipperFarmStatus(BasePlugin):
             f"{base}/printer/objects/query?"
             "print_stats&display_status&toolhead&extruder&heater_bed&virtual_sdcard&webhooks"
         )
+        snapshot_url = self._build_snapshot_url(base)
 
         printer = {
             "name": name,
             "url": base,
-            "webcam_url": self._build_webcam_url(base),
+            "snapshot_url": snapshot_url,
+            "snapshot_path": "",
             "connected": False,
             "state": "offline",
             "status_label": "Offline",
@@ -202,6 +253,8 @@ class KlipperFarmStatus(BasePlugin):
                 except Exception:
                     pass
 
+            printer["snapshot_path"] = self._save_snapshot(name, snapshot_url)
+
         except Exception as e:
             printer["message"] = str(e)
 
@@ -219,13 +272,8 @@ class KlipperFarmStatus(BasePlugin):
         except Exception:
             configured_printers = []
 
-        if not configured_printers:
-            configured_printers = [
-                {"name": "K1 Max", "url": "http://k1max.lan:7125", "enabled": True},
-                {"name": "AD5X", "url": "http://ad5x.lan:7125", "enabled": True},
-            ]
-
         printers = []
+        include_spool = to_bool(settings.get("show_spool"), True)
 
         for idx, printer_cfg in enumerate(configured_printers, start=1):
             enabled = to_bool(printer_cfg.get("enabled"), True)
@@ -234,13 +282,13 @@ class KlipperFarmStatus(BasePlugin):
 
             name = (printer_cfg.get("name") or f"Printer {idx}").strip()
             url = (printer_cfg.get("url") or "").strip()
-            include_spool = to_bool(settings.get("show_spool"), True)
 
             if not url:
                 printers.append({
                     "name": name,
                     "url": "",
-                    "webcam_url": "",
+                    "snapshot_url": "",
+                    "snapshot_path": "",
                     "connected": False,
                     "state": "offline",
                     "status_label": "Missing URL",
@@ -271,7 +319,6 @@ class KlipperFarmStatus(BasePlugin):
         printing = sum(1 for p in printers if p["state_class"] == "printing")
         paused = sum(1 for p in printers if p["state_class"] == "paused")
         offline = sum(1 for p in printers if p["state_class"] == "offline")
-        errors = sum(1 for p in printers if p["state_class"] == "error")
 
         width, height = device_config.get_resolution()
         if device_config.get_config("orientation") == "vertical":
@@ -289,7 +336,6 @@ class KlipperFarmStatus(BasePlugin):
                 "printing": printing,
                 "paused": paused,
                 "offline": offline,
-                "errors": errors,
                 "show_progress": to_bool(settings.get("show_progress"), True),
                 "show_filename": to_bool(settings.get("show_filename"), True),
                 "show_eta": to_bool(settings.get("show_eta"), True),

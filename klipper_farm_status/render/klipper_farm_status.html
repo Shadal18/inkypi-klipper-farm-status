@@ -19,7 +19,7 @@
   <div class="cards cards-count-{{ printers|length }}">
     {% for printer in printers %}
     <article class="card state-{{ printer.state_class }}">
-      <div class="card-main">
+      <div class="card-top">
         <div class="card-header">
           <div class="card-header-main">
             <div class="printer-name">{{ printer.name }}</div>
@@ -31,6 +31,27 @@
           {% endif %}
         </div>
 
+        {% if show_image %}
+        <aside class="card-thumb">
+          {% if printer.snapshot_base64 %}
+          <div class="webcam-frame">
+            <img
+              class="webcam-stream"
+              src="data:{{ printer.snapshot_mime }};base64,{{ printer.snapshot_base64 | safe }}"
+              alt="{{ printer.name }} snapshot"
+            />
+            <div class="webcam-label">Cam</div>
+          </div>
+          {% else %}
+          <div class="webcam-frame">
+            <div class="webcam-empty">No image</div>
+          </div>
+          {% endif %}
+        </aside>
+        {% endif %}
+      </div>
+
+      <div class="card-main">
         {% if show_filename and printer.filename %}
         <div class="filename">{{ printer.filename }}</div>
         {% endif %}
@@ -97,25 +118,6 @@
         <div class="message">{{ printer.message }}</div>
         {% endif %}
       </div>
-
-      {% if show_image %}
-      <aside class="card-side">
-        {% if printer.snapshot_base64 %}
-        <div class="webcam-frame">
-          <img
-            class="webcam-stream"
-            src="data:{{ printer.snapshot_mime }};base64,{{ printer.snapshot_base64 | safe }}"
-            alt="{{ printer.name }} snapshot"
-          />
-          <div class="webcam-label">Cam</div>
-        </div>
-        {% else %}
-        <div class="webcam-frame">
-          <div class="webcam-empty">No image</div>
-        </div>
-        {% endif %}
-      </aside>
-      {% endif %}
     </article>
     {% endfor %}
   </div>

@@ -166,8 +166,8 @@ body {
   min-width: 140px;
   max-width: 140px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-end;
 }
 
 .webcam-frame {
@@ -528,6 +528,7 @@ body {
     min-width: 0;
     max-width: none;
     flex: 0 0 auto;
+    justify-content: flex-start;
   }
 
   .webcam-frame,
@@ -535,8 +536,8 @@ body {
     width: 100%;
     max-width: none;
     min-width: 0;
+    height: 180px;
     min-height: 180px;
     max-height: none;
-    height: 180px;
   }
 }

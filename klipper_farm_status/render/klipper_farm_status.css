@@ -120,7 +120,7 @@ body {
   padding: 12px 12px 12px;
   box-sizing: border-box;
   border-radius: 18px;
-  overflow: visible;
+  overflow: hidden;
   background: rgba(0, 0, 0, 0.05);
   border-top: 8px solid rgba(0, 0, 0, 0.16);
 }
@@ -154,65 +154,79 @@ body {
 .card-main {
   min-width: 0;
   min-height: 0;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding-bottom: 2px;
+  gap: 8px;
 }
 
 .card-side {
+  flex: 0 0 128px;
   width: 128px;
   min-width: 128px;
   max-width: 128px;
+  align-self: stretch;
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  align-self: center;
 }
 
-.snapshot-box {
-  width: 128px;
-  height: 128px;
-  min-width: 128px;
-  min-height: 128px;
-  max-width: 128px;
-  max-height: 128px;
-  border-radius: 16px;
+.webcam-frame {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 14px;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.28);
   border: 1px solid rgba(0, 0, 0, 0.12);
-  background: rgba(255, 255, 255, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.snapshot-img {
-  width: 128px;
-  height: 128px;
-  min-width: 128px;
-  min-height: 128px;
-  max-width: 128px;
-  max-height: 128px;
+.webcam-stream {
+  display: block;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   object-position: center;
-  display: block;
   background: rgba(0, 0, 0, 0.08);
 }
 
-.snapshot-empty {
-  font-size: 13px;
-  line-height: 1.2;
-  font-weight: 700;
+.webcam-label {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 5px 7px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.52);
+  color: #fff;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.webcam-empty {
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
   text-align: center;
-  color: rgba(0, 0, 0, 0.58);
-  padding: 8px;
+  padding: 12px;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 700;
+  opacity: 0.72;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 12px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -222,8 +236,8 @@ body {
 }
 
 .printer-name {
-  font-size: 24px;
-  line-height: 1.02;
+  font-size: 22px;
+  line-height: 1.05;
   font-weight: 800;
   margin-bottom: 4px;
   min-width: 0;
@@ -243,19 +257,20 @@ body {
 
 .progress-badge {
   flex: 0 0 auto;
-  padding: 4px 0;
-  background: transparent;
-  font-size: 20px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.34);
+  font-size: 18px;
   line-height: 1;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .filename {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.2;
-  font-weight: 700;
-  opacity: 0.88;
+  font-weight: 600;
+  opacity: 0.86;
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -266,13 +281,14 @@ body {
 .metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 10px;
+  gap: 8px;
+  align-content: start;
 }
 
 .metric {
   min-width: 0;
   border-radius: 12px;
-  padding: 8px 10px 7px;
+  padding: 9px 10px 8px;
   background: rgba(255, 255, 255, 0.28);
 }
 
@@ -289,7 +305,7 @@ body {
 
 .metric-value {
   display: block;
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.05;
   font-weight: 800;
   min-width: 0;
@@ -304,13 +320,13 @@ body {
   align-items: flex-start;
   gap: 10px;
   border-radius: 14px;
-  padding: 9px 10px;
+  padding: 10px 11px;
   background: rgba(255, 255, 255, 0.3);
 }
 
 .spool-dot {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   flex: 0 0 auto;
   margin-top: 2px;
@@ -324,7 +340,7 @@ body {
 }
 
 .spool-title {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.15;
   font-weight: 800;
   margin-bottom: 3px;
@@ -334,7 +350,7 @@ body {
 }
 
 .spool-meta {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.2;
   opacity: 0.72;
   overflow: hidden;
@@ -343,12 +359,12 @@ body {
 }
 
 .message {
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.2;
   opacity: 0.72;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   word-break: break-word;
 }
@@ -359,11 +375,9 @@ body {
 .cards-count-8 .card,
 .cards-count-9 .card,
 .cards-count-10 .card {
-  grid-template-columns: minmax(0, 1fr) 96px;
-  gap: 12px;
-  padding: 12px;
+  padding: 10px 10px 10px;
+  gap: 8px;
   border-radius: 14px;
-  min-height: 156px;
 }
 
 .cards-count-5 .card-side,
@@ -372,29 +386,33 @@ body {
 .cards-count-8 .card-side,
 .cards-count-9 .card-side,
 .cards-count-10 .card-side {
+  flex-basis: 96px;
   width: 96px;
   min-width: 96px;
   max-width: 96px;
 }
 
-.cards-count-5 .snapshot-box,
-.cards-count-6 .snapshot-box,
-.cards-count-7 .snapshot-box,
-.cards-count-8 .snapshot-box,
-.cards-count-9 .snapshot-box,
-.cards-count-10 .snapshot-box,
-.cards-count-5 .snapshot-img,
-.cards-count-6 .snapshot-img,
-.cards-count-7 .snapshot-img,
-.cards-count-8 .snapshot-img,
-.cards-count-9 .snapshot-img,
-.cards-count-10 .snapshot-img {
-  width: 96px;
-  height: 96px;
-  min-width: 96px;
-  min-height: 96px;
-  max-width: 96px;
-  max-height: 96px;
+.cards-count-5 .webcam-frame,
+.cards-count-6 .webcam-frame,
+.cards-count-7 .webcam-frame,
+.cards-count-8 .webcam-frame,
+.cards-count-9 .webcam-frame,
+.cards-count-10 .webcam-frame {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
+}
+
+.cards-count-5 .webcam-empty,
+.cards-count-6 .webcam-empty,
+.cards-count-7 .webcam-empty,
+.cards-count-8 .webcam-empty,
+.cards-count-9 .webcam-empty,
+.cards-count-10 .webcam-empty {
+  min-height: 100%;
+  max-height: none;
 }
 
 .cards-count-5 .printer-name,
@@ -403,7 +421,7 @@ body {
 .cards-count-8 .printer-name,
 .cards-count-9 .printer-name,
 .cards-count-10 .printer-name {
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .cards-count-5 .progress-badge,
@@ -412,16 +430,8 @@ body {
 .cards-count-8 .progress-badge,
 .cards-count-9 .progress-badge,
 .cards-count-10 .progress-badge {
-  font-size: 17px;
-}
-
-.cards-count-5 .filename,
-.cards-count-6 .filename,
-.cards-count-7 .filename,
-.cards-count-8 .filename,
-.cards-count-9 .filename,
-.cards-count-10 .filename {
-  font-size: 11px;
+  font-size: 15px;
+  padding: 5px 7px;
 }
 
 .cards-count-5 .metric,
@@ -439,9 +449,15 @@ body {
 .cards-count-8 .metric-value,
 .cards-count-9 .metric-value,
 .cards-count-10 .metric-value {
-  font-size: 13px;
+  font-size: 14px;
 }
 
+.cards-count-5 .filename,
+.cards-count-6 .filename,
+.cards-count-7 .filename,
+.cards-count-8 .filename,
+.cards-count-9 .filename,
+.cards-count-10 .filename,
 .cards-count-5 .spool-title,
 .cards-count-6 .spool-title,
 .cards-count-7 .spool-title,
@@ -462,14 +478,18 @@ body {
 .cards-count-7 .message,
 .cards-count-8 .message,
 .cards-count-9 .message,
-.cards-count-10 .message,
-.cards-count-5 .snapshot-empty,
-.cards-count-6 .snapshot-empty,
-.cards-count-7 .snapshot-empty,
-.cards-count-8 .snapshot-empty,
-.cards-count-9 .snapshot-empty,
-.cards-count-10 .snapshot-empty {
+.cards-count-10 .message {
   font-size: 10px;
+}
+
+.cards-count-5 .webcam-label,
+.cards-count-6 .webcam-label,
+.cards-count-7 .webcam-label,
+.cards-count-8 .webcam-label,
+.cards-count-9 .webcam-label,
+.cards-count-10 .webcam-label {
+  font-size: 9px;
+  padding: 4px 6px;
 }
 
 @media (max-width: 900px) {
@@ -497,41 +517,22 @@ body {
   }
 
   .card {
-    grid-template-columns: minmax(0, 1fr) 112px;
-    gap: 14px;
-    min-height: 172px;
+    flex-direction: column;
   }
 
   .card-side {
-    width: 112px;
-    min-width: 112px;
-    max-width: 112px;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    flex: 0 0 auto;
+    align-self: auto;
   }
 
-  .snapshot-box,
-  .snapshot-img {
-    width: 112px;
-    height: 112px;
-    min-width: 112px;
-    min-height: 112px;
-    max-width: 112px;
-    max-height: 112px;
+  .webcam-frame,
+  .webcam-empty {
+    width: 100%;
+    height: 180px;
+    min-height: 180px;
+    max-height: none;
   }
-}
-
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-  align-content: start;
-}
-
-.card-main {
-  min-width: 0;
-  min-height: 0;
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
 }

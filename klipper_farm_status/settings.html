@@ -1,884 +1,353 @@
 <style>
   :root {
-    --kf-bg: var(--background-color, var(--color-background, #f5f7fb));
-    --kf-bg-soft: var(--card-background-secondary, var(--color-surface-2, #eef2f7));
-    --kf-panel: var(--card-background, var(--color-surface, #ffffff));
-    --kf-panel-2: var(--card-background-hover, var(--color-surface-2, #f8fafc));
-    --kf-border: var(--border-color, rgba(15, 23, 42, 0.12));
-    --kf-text: var(--text-primary, var(--color-text, #0f172a));
-    --kf-text-muted: var(--text-secondary, var(--color-text-secondary, #475569));
-    --kf-text-soft: var(--text-muted, #64748b);
-    --kf-primary: var(--accent-color, #14b8a6);
-    --kf-info: var(--info-color, #3b82f6);
-    --kf-shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
-    --kf-radius-xl: 18px;
-    --kf-radius-lg: 14px;
+    --ink-bg: var(--background-color, var(--color-background, #f5f7fb));
+    --ink-bg-soft: var(--card-background-secondary, var(--color-surface-2, #eef2f7));
+    --ink-panel: var(--card-background, var(--color-surface, #ffffff));
+    --ink-panel-2: var(--card-background-hover, var(--color-surface-2, #f8fafc));
+    --ink-border: var(--border-color, rgba(15, 23, 42, 0.12));
+    --ink-text: var(--text-primary, var(--color-text, #0f172a));
+    --ink-text-muted: var(--text-secondary, var(--color-text-secondary, #475569));
+    --ink-text-soft: var(--text-muted, #64748b);
+    --ink-primary: var(--accent-color, #14b8a6);
+    --ink-info: var(--info-color, #3b82f6);
+    --ink-danger: var(--danger-color, #dc3545);
+    --ink-shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --ink-radius-xl: 18px;
+    --ink-radius-lg: 14px;
   }
 
   html.dark,
   body.dark,
   [data-theme="dark"],
   html[data-theme="dark"] {
-    --kf-bg: var(--background-color, var(--color-background, #0f172a));
-    --kf-bg-soft: var(--card-background-secondary, var(--color-surface-2, #162033));
-    --kf-panel: var(--card-background, var(--color-surface, #111827));
-    --kf-panel-2: var(--card-background-hover, var(--color-surface-2, #172033));
-    --kf-border: var(--border-color, rgba(255, 255, 255, 0.1));
-    --kf-text: var(--text-primary, var(--color-text, #f8fafc));
-    --kf-text-muted: var(--text-secondary, var(--color-text-secondary, #cbd5e1));
-    --kf-text-soft: var(--text-muted, #94a3b8);
-    --kf-shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.22);
+    --ink-bg: var(--background-color, var(--color-background, #0f172a));
+    --ink-bg-soft: var(--card-background-secondary, var(--color-surface-2, #162033));
+    --ink-panel: var(--card-background, var(--color-surface, #111827));
+    --ink-panel-2: var(--card-background-hover, var(--color-surface-2, #172033));
+    --ink-border: var(--border-color, rgba(255, 255, 255, 0.1));
+    --ink-text: var(--text-primary, var(--color-text, #f8fafc));
+    --ink-text-muted: var(--text-secondary, var(--color-text-secondary, #cbd5e1));
+    --ink-text-soft: var(--text-muted, #94a3b8);
+    --ink-shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.22);
   }
 
-  .klipper-farm-settings {
-    width: 100%;
-    box-sizing: border-box;
-    color: var(--kf-text);
+  .klipper-farm-settings { width: 100%; box-sizing: border-box; color: var(--ink-text); }
+  .ink-shell { display: grid; gap: 18px; margin-top: 8px; }
+
+  .ink-hero, .ink-section, .ink-hint-card, .ink-link-card {
+    overflow: hidden; border: 1px solid var(--ink-border); border-radius: var(--ink-radius-xl);
+    background: linear-gradient(180deg, var(--ink-panel), var(--ink-panel-2)); box-shadow: var(--ink-shadow-sm);
   }
 
-  .kf-shell {
-    display: grid;
-    gap: 18px;
-    margin-top: 8px;
-  }
-
-  .kf-hero {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--kf-radius-xl);
-    border: 1px solid var(--kf-border);
+  .ink-hero {
+    position: relative; padding: 22px;
     background:
-      radial-gradient(circle at top right, color-mix(in srgb, var(--kf-primary) 16%, transparent), transparent 34%),
-      radial-gradient(circle at bottom left, color-mix(in srgb, var(--kf-info) 12%, transparent), transparent 30%),
-      linear-gradient(180deg, color-mix(in srgb, var(--kf-panel) 92%, var(--kf-bg-soft) 8%), var(--kf-panel-2));
-    box-shadow: var(--kf-shadow-sm);
-    padding: 22px 22px 18px;
+      radial-gradient(circle at top right, color-mix(in srgb, var(--ink-primary) 16%, transparent), transparent 34%),
+      radial-gradient(circle at bottom left, color-mix(in srgb, var(--ink-info) 12%, transparent), transparent 30%),
+      linear-gradient(180deg, color-mix(in srgb, var(--ink-panel) 92%, var(--ink-bg-soft) 8%), var(--ink-panel-2));
   }
 
-  .kf-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--kf-primary) 14%, transparent);
-    color: var(--kf-primary);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    border: 1px solid color-mix(in srgb, var(--kf-primary) 22%, transparent);
+  .ink-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; margin-bottom: 10px;
+    border: 1px solid color-mix(in srgb, var(--ink-primary) 22%, transparent); border-radius: 999px;
+    background: color-mix(in srgb, var(--ink-primary) 14%, transparent); color: var(--ink-primary);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
   }
 
-  .kf-hero h2 {
-    margin: 0;
-    color: var(--kf-text);
-    font-size: 28px;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+  .ink-hero h2 { margin: 0; color: var(--ink-text); font-size: 28px; line-height: 1.08; letter-spacing: -0.03em; }
+  .ink-hero p { max-width: 68ch; margin: 10px 0 0; color: var(--ink-text-muted); font-size: 14px; line-height: 1.6; }
+
+  .ink-hint-card, .ink-link-card { padding: 16px 20px; }
+  .ink-hint-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+  .ink-hint-icon, .ink-section-icon, .ink-link-icon {
+    display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center;
+    border: 1px solid var(--ink-border); border-radius: 12px;
+    background: color-mix(in srgb, var(--ink-bg-soft) 65%, var(--ink-panel) 35%); font-size: 18px;
   }
 
-  .kf-hero p {
-    margin: 10px 0 0;
-    max-width: 68ch;
-    color: var(--kf-text-muted);
-    font-size: 14px;
-    line-height: 1.6;
+  .ink-hint-icon {
+    width: 30px; height: 30px; border-color: color-mix(in srgb, var(--ink-primary) 28%, transparent);
+    border-radius: 9px; background: color-mix(in srgb, var(--ink-primary) 14%, transparent); font-size: 16px;
   }
 
-  .kf-metrics {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-    margin-top: 18px;
-  }
+  .ink-hint-title { margin: 0; color: var(--ink-text); font-size: 14px; font-weight: 700; }
+  .ink-hint-copy, .ink-link-help { margin: 0; color: var(--ink-text-muted); font-size: 12px; line-height: 1.6; }
+  .ink-hint-copy code, .ink-note code { padding: 2px 5px; border-radius: 5px; background: color-mix(in srgb, var(--ink-primary) 12%, transparent); color: var(--ink-text); font-family: monospace; }
 
-  .kf-metric {
-    border: 1px solid var(--kf-border);
-    border-radius: var(--kf-radius-lg);
-    background: color-mix(in srgb, var(--kf-panel) 92%, var(--kf-bg) 8%);
-    padding: 14px 14px 12px;
-    min-width: 0;
-    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 22%, transparent);
-  }
+  .ink-section-header { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border-bottom: 1px solid var(--ink-border); }
+  .ink-section-icon { width: 38px; height: 38px; }
+  .ink-section-copy { flex: 1; min-width: 0; }
+  .ink-section-title { margin: 0; color: var(--ink-text); font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .ink-section-subtitle { margin-top: 4px; color: var(--ink-text-muted); font-size: 13px; }
+  .ink-section-body { padding: 18px 20px 20px; }
 
-  .kf-metric-label {
-    color: var(--kf-text-soft);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 8px;
-  }
+  .ink-grid { display: grid; gap: 16px; }
+  .ink-field { display: grid; min-width: 0; gap: 8px; }
+  .ink-label { color: var(--ink-text-soft); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
 
-  .kf-metric-value {
-    color: var(--kf-text);
-    font-size: 28px;
-    line-height: 1;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-
-  .kf-metric-sub {
-    color: var(--kf-text-muted);
-    font-size: 12px;
-    margin-top: 6px;
-  }
-
-  .kf-section,
-  .kf-link-card {
-    border: 1px solid var(--kf-border);
-    border-radius: var(--kf-radius-xl);
-    background: linear-gradient(180deg, var(--kf-panel), var(--kf-panel-2));
-    box-shadow: var(--kf-shadow-sm);
-    overflow: hidden;
-  }
-
-  .kf-section-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 18px 20px;
-    border-bottom: 1px solid var(--kf-border);
-  }
-
-  .kf-section-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-    border: 1px solid var(--kf-border);
-    background: color-mix(in srgb, var(--kf-bg-soft) 65%, var(--kf-panel) 35%);
-  }
-
-  .kf-section-copy {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .kf-section-title {
-    color: var(--kf-text);
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.2;
-    margin: 0;
-  }
-
-  .kf-section-subtitle {
-    color: var(--kf-text-muted);
-    font-size: 13px;
-    margin-top: 4px;
-  }
-
-  .kf-section-body {
-    padding: 18px 20px 20px;
-  }
-
-  .kf-grid {
-    display: grid;
-    gap: 16px;
-  }
-
-  .kf-field {
-    display: grid;
-    gap: 8px;
-    min-width: 0;
-  }
-
-  .kf-label {
-    color: var(--kf-text-soft);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .kf-input,
-  .klipper-farm-settings input[type="text"],
-  .klipper-farm-settings select {
-    width: 100%;
-    min-height: 46px;
-    padding: 0 14px;
-    border-radius: 12px;
-    border: 1px solid var(--kf-border);
-    background: var(--kf-panel);
-    color: var(--kf-text);
-    outline: none;
-    box-sizing: border-box;
+  .ink-input, .klipper-farm-settings input[type="text"], .klipper-farm-settings select {
+    box-sizing: border-box; width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid var(--ink-border);
+    border-radius: 12px; outline: none; background: var(--ink-panel); color: var(--ink-text);
     box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent);
   }
 
-  .kf-input::placeholder,
-  .klipper-farm-settings input::placeholder {
-    color: var(--kf-text-soft);
-    opacity: 1;
+  .ink-input::placeholder, .klipper-farm-settings input::placeholder { color: var(--ink-text-soft); opacity: 1; }
+  .ink-input:focus, .klipper-farm-settings input:focus, .klipper-farm-settings select:focus {
+    border-color: color-mix(in srgb, var(--ink-primary) 45%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ink-primary) 14%, transparent);
   }
 
-  .kf-input:focus,
-  .klipper-farm-settings input:focus,
-  .klipper-farm-settings select:focus {
-    border-color: color-mix(in srgb, var(--kf-primary) 45%, transparent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--kf-primary) 14%, transparent);
+  .ink-note { margin: 0; color: var(--ink-text-muted); font-size: 12px; line-height: 1.6; }
+
+  .ink-printers-container { display: flex; flex-direction: column; gap: 14px; min-width: 0; width: 100%; }
+  .ink-printer-card {
+    display: flex; flex-direction: column; gap: 16px; min-width: 0; width: 100%; box-sizing: border-box; overflow: hidden;
+    border: 1px solid var(--ink-border); border-radius: var(--ink-radius-lg);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--ink-panel) 96%, #fff 4%), color-mix(in srgb, var(--ink-panel-2) 96%, var(--ink-bg) 4%));
+    padding: 14px; box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
   }
 
-  .kf-note {
-    margin: 0;
-    color: var(--kf-text-muted);
-    font-size: 12px;
-    line-height: 1.6;
+  .ink-printer-card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-width: 0; }
+  .ink-printer-card-title { flex: 1 1 auto; min-width: 0; color: var(--ink-text); font-size: 14px; font-weight: 700; }
+
+  .ink-remove-printer-btn, .ink-add-printer-btn {
+    min-height: 40px; border-radius: 10px; padding: 0 12px; cursor: pointer; font-weight: 700;
+  }
+  .ink-remove-printer-btn { flex: 0 0 auto; border: 1px solid color-mix(in srgb, var(--ink-danger) 30%, transparent); background: var(--ink-danger); color: #fff; white-space: nowrap; }
+  .ink-add-printer-btn { width: 100%; border: 1px dashed color-mix(in srgb, var(--ink-primary) 45%, var(--ink-border) 55%); border-radius: 12px; background: color-mix(in srgb, var(--ink-bg-soft) 75%, var(--ink-panel) 25%); color: var(--ink-text); }
+
+  .ink-toggle-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .ink-toggle-card {
+    border: 1px solid var(--ink-border); border-radius: var(--ink-radius-lg);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--ink-panel) 96%, #fff 4%), color-mix(in srgb, var(--ink-panel-2) 96%, var(--ink-bg) 4%));
+    padding: 14px; box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
+  }
+  .ink-toggle-row { display: flex; align-items: flex-start; gap: 12px; }
+  .ink-toggle-control { display: flex; flex: 0 0 auto; align-items: center; justify-content: center; min-width: 24px; min-height: 24px; padding-top: 2px; }
+  .ink-toggle-text { min-width: 0; }
+
+  .klipper-farm-settings input[type="checkbox"], .ink-toggle-card input[type="checkbox"], .toggle-checkbox {
+    appearance: auto !important; -webkit-appearance: checkbox !important; -moz-appearance: checkbox !important;
+    display: inline-block !important; visibility: visible !important; opacity: 1 !important; position: static !important;
+    width: 18px !important; height: 18px !important; min-height: 18px !important; margin: 0 !important; padding: 0 !important;
+    border: initial !important; background: initial !important; box-shadow: none !important; accent-color: var(--ink-primary); cursor: pointer !important;
   }
 
-  .kf-printers-container {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    min-width: 0;
-    width: 100%;
-  }
+  .ink-toggle-title { margin: 0 0 4px; color: var(--ink-text); font-size: 14px; font-weight: 700; }
+  .ink-toggle-copy { margin: 0; color: var(--ink-text-muted); font-size: 12px; line-height: 1.5; }
 
-  .kf-printer-card {
-    border: 1px solid var(--kf-border);
-    border-radius: var(--kf-radius-lg);
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--kf-panel) 96%, #fff 4%),
-      color-mix(in srgb, var(--kf-panel-2) 96%, var(--kf-bg) 4%)
-    );
-    padding: 14px;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    min-width: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
-  }
+  .ink-link-card { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .ink-link-icon { width: 38px; height: 38px; background: color-mix(in srgb, var(--ink-info) 13%, var(--ink-panel)); }
+  .ink-link-copy { min-width: 0; }
+  .ink-link-card a { display: inline-block; color: var(--ink-primary); font-weight: 700; text-decoration: none; word-break: break-word; }
+  .ink-link-card a:hover, .ink-link-card a:focus-visible { outline: none; text-decoration: underline; }
 
-  .kf-printer-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-    min-width: 0;
-  }
-
-  .kf-printer-card-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--kf-text);
-    min-width: 0;
-    flex: 1 1 auto;
-  }
-
-  .kf-remove-printer-btn {
-    border: 1px solid color-mix(in srgb, #dc3545 30%, transparent);
-    background: #dc3545;
-    color: #fff;
-    border-radius: 10px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-weight: 700;
-    flex: 0 0 auto;
-    white-space: nowrap;
-  }
-
-  .kf-add-printer-btn {
-    width: 100%;
-    min-height: 46px;
-    border-radius: 12px;
-    border: 1px dashed color-mix(in srgb, var(--kf-primary) 45%, var(--kf-border) 55%);
-    background: color-mix(in srgb, var(--kf-bg-soft) 75%, var(--kf-panel) 25%);
-    color: var(--kf-text);
-    cursor: pointer;
-    font-weight: 700;
-    padding: 0 14px;
-  }
-
-  .kf-toggle-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-  }
-
-  .kf-toggle-card {
-    border: 1px solid var(--kf-border);
-    border-radius: var(--kf-radius-lg);
-    background: linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--kf-panel) 96%, #fff 4%),
-      color-mix(in srgb, var(--kf-panel-2) 96%, var(--kf-bg) 4%)
-    );
-    padding: 14px;
-    box-shadow: 0 1px 0 color-mix(in srgb, #fff 16%, transparent);
-  }
-
-  .kf-toggle-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    gap: 12px;
-  }
-
-  .kf-toggle-control {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 24px;
-    min-height: 24px;
-    padding-top: 2px;
-    order: 0;
-  }
-
-  .kf-toggle-text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    order: 1;
-  }
-
-  .klipper-farm-settings input[type="checkbox"],
-  .kf-toggle-card input[type="checkbox"],
-  .toggle-checkbox {
-    appearance: auto !important;
-    -webkit-appearance: checkbox !important;
-    -moz-appearance: checkbox !important;
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: static !important;
-    pointer-events: auto !important;
-    width: 18px !important;
-    height: 18px !important;
-    margin: 0 !important;
-    accent-color: var(--kf-primary);
-    cursor: pointer !important;
-    box-shadow: none !important;
-    min-height: 18px !important;
-    padding: 0 !important;
-    border: initial !important;
-    background: initial !important;
-  }
-
-  .kf-toggle-title {
-    color: var(--kf-text);
-    font-size: 14px;
-    font-weight: 700;
-    margin: 0 0 4px;
-  }
-
-  .kf-toggle-copy {
-    color: var(--kf-text-muted);
-    font-size: 12px;
-    line-height: 1.5;
-    margin: 0;
-  }
-
-  .kf-link-card {
-    padding: 16px 20px;
-    min-width: 0;
-  }
-
-  .kf-link-card a {
-    color: var(--kf-primary);
-    text-decoration: none;
-    font-weight: 700;
-    word-break: break-word;
-  }
-
-  .kf-link-card a:hover,
-  .kf-link-card a:focus-visible {
-    text-decoration: underline;
-    outline: none;
-  }
-
-  .kf-link-help {
-    margin-top: 8px;
-    color: var(--kf-text-muted);
-    font-size: 12px;
-    line-height: 1.6;
-  }
-
-  .floatingchat-container-wrap,
-  .floatingchat-container-wrap-mobi {
-    left: unset !important;
-    right: 16px !important;
-  }
-
-  .floatingchat-container-wrap {
-    bottom: 14px !important;
-  }
-
-  .floating-chat-kofi-popup-iframe {
-    left: unset !important;
-    right: 16px !important;
-    bottom: 76px !important;
-  }
-
-  @media (max-width: 920px) {
-    .kf-metrics {
-      grid-template-columns: 1fr;
-    }
-  }
+  .floatingchat-container-wrap, .floatingchat-container-wrap-mobi { right: 16px !important; bottom: 14px !important; left: unset !important; }
+  .floating-chat-kofi-popup-iframe { right: 16px !important; bottom: 76px !important; left: unset !important; }
 
   @media (max-width: 760px) {
-    .kf-hero {
-      padding: 18px;
-    }
-
-    .kf-hero h2 {
-      font-size: 22px;
-    }
-
-    .kf-section-header {
-      padding: 16px;
-    }
-
-    .kf-section-body,
-    .kf-link-card {
-      padding: 16px;
-    }
-
-    .kf-printer-card-header {
-      flex-direction: column;
-      align-items: stretch;
-    }
-
-    .kf-remove-printer-btn {
-      width: 100%;
-    }
+    .ink-hero { padding: 18px; }
+    .ink-hero h2 { font-size: 22px; }
+    .ink-section-header, .ink-section-body, .ink-hint-card, .ink-link-card { padding: 16px; }
+    .ink-printer-card-header { flex-direction: column; align-items: stretch; }
+    .ink-remove-printer-btn { width: 100%; }
+    .ink-link-card { align-items: flex-start; }
   }
 </style>
 
 <div class="klipper-farm-settings">
-  <div class="kf-shell">
-    <section class="kf-hero">
-      <div class="kf-eyebrow">Klipper Farm</div>
+  <div class="ink-shell">
+    <section class="ink-hero">
+      <div class="ink-eyebrow">🖨️ Klipper farm status</div>
       <h2>Monitor multiple Moonraker printers from one shared dashboard.</h2>
       <p>
-        Add printers, choose which details to display, and render a single farm-wide status board for your e-ink screen.
+        Add one or more Moonraker endpoints, choose the print and spool details to display, and render a farm-wide
+        status board for your e-paper screen.
       </p>
-
-      <div class="kf-metrics">
-        <div class="kf-metric">
-          <div class="kf-metric-label">Source</div>
-          <div class="kf-metric-value">Moonraker</div>
-          <div class="kf-metric-sub">Per-printer status and telemetry</div>
-        </div>
-        <div class="kf-metric">
-          <div class="kf-metric-label">Scope</div>
-          <div class="kf-metric-value">Multi</div>
-          <div class="kf-metric-sub">Track several printers at once</div>
-        </div>
-        <div class="kf-metric">
-          <div class="kf-metric-label">Display</div>
-          <div class="kf-metric-value">Farm</div>
-          <div class="kf-metric-sub">Status, progress, temps, spool data, and optional camera snapshots</div>
-        </div>
-      </div>
     </section>
 
-    <section class="kf-section">
-      <div class="kf-section-header">
-        <span class="kf-section-icon" aria-hidden="true">🖨️</span>
-        <div class="kf-section-copy">
-          <div class="kf-section-title">Dashboard settings</div>
-          <div class="kf-section-subtitle">Set the board title and configure your printer list.</div>
+    <section class="ink-hint-card">
+      <div class="ink-hint-heading">
+        <span class="ink-hint-icon" aria-hidden="true">🔗</span>
+        <h3 class="ink-hint-title">Add Moonraker printers</h3>
+      </div>
+      <p class="ink-hint-copy">
+        Each printer needs a reachable Moonraker URL, such as <code>http://printer.local:7125</code>. Camera snapshots
+        are optional and only needed when the default <code>/webcam/?action=snapshot</code> path is not correct.
+      </p>
+    </section>
+
+    <section class="ink-section">
+      <div class="ink-section-header">
+        <span class="ink-section-icon" aria-hidden="true">🖨️</span>
+        <div class="ink-section-copy">
+          <h3 class="ink-section-title">Dashboard and printers</h3>
+          <div class="ink-section-subtitle">Set the board title and configure each Moonraker printer.</div>
         </div>
       </div>
-      <div class="kf-section-body">
-        <div class="kf-grid">
-          <div class="kf-field">
-            <label for="title" class="kf-label">Header text</label>
-            <input type="text" id="title" name="title" placeholder="Klipper Farm" class="kf-input" />
+      <div class="ink-section-body">
+        <div class="ink-grid">
+          <div class="ink-field">
+            <label for="title" class="ink-label">Header text</label>
+            <input type="text" id="title" name="title" class="ink-input" placeholder="Klipper Farm" maxlength="40" />
+            <p class="ink-note">Optional. Leave blank to use the default <code>Klipper Farm</code> heading.</p>
           </div>
 
           <input type="hidden" id="printers_json" name="printers_json" />
 
-          <div class="kf-field">
-            <div class="kf-label">Printers</div>
-            <div id="printers_container" class="kf-printers-container"></div>
-            <button type="button" id="add_printer_btn" class="kf-add-printer-btn">+ Add Printer</button>
-            <p class="kf-note">
-              Add one Moonraker endpoint per printer. Camera snapshot URL is optional and only needed when the default
-              /webcam/?action=snapshot path is not correct for that printer.
-            </p>
+          <div class="ink-field">
+            <div class="ink-label">Printers</div>
+            <div id="printers_container" class="ink-printers-container"></div>
+            <button type="button" id="add_printer_btn" class="ink-add-printer-btn">+ Add printer</button>
+            <p class="ink-note">Disable a printer to keep its configuration without including it on the farm display.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="kf-section">
-      <div class="kf-section-header">
-        <span class="kf-section-icon" aria-hidden="true">⚙️</span>
-        <div class="kf-section-copy">
-          <div class="kf-section-title">Display options</div>
-          <div class="kf-section-subtitle">Choose which printer details appear on the farm board.</div>
+    <section class="ink-section">
+      <div class="ink-section-header">
+        <span class="ink-section-icon" aria-hidden="true">⚙️</span>
+        <div class="ink-section-copy">
+          <h3 class="ink-section-title">Display options</h3>
+          <div class="ink-section-subtitle">Choose which printer details appear on the farm board.</div>
         </div>
       </div>
-      <div class="kf-section-body">
-        <div class="kf-toggle-grid">
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_image_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Camera Image</div>
-                <div class="kf-toggle-copy">
-                  Display a still snapshot from each printer webcam on the right side of the card.
-                </div>
-              </div>
-            </div>
-            <input type="hidden" id="show_image" name="show_image" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_progress_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Progress</div>
-                <div class="kf-toggle-copy">Display each printer’s current progress percentage.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_progress" name="show_progress" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_filename_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show File Name</div>
-                <div class="kf-toggle-copy">Display the current file name for active jobs.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_filename" name="show_filename" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_eta_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show ETA</div>
-                <div class="kf-toggle-copy">Display estimated remaining print time.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_eta" name="show_eta" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_layers_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Layers</div>
-                <div class="kf-toggle-copy">Display current and total print layers when available.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_layers" name="show_layers" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_temps_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Temperatures</div>
-                <div class="kf-toggle-copy">Display hotend and bed temperatures.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_temps" name="show_temps" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Active Spool</div>
-                <div class="kf-toggle-copy">Display the spool currently assigned to the printer.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_spool" name="show_spool" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_vendor_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Spool Brand</div>
-                <div class="kf-toggle-copy">Display spool vendor or brand information.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_spool_vendor" name="show_spool_vendor" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_material_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Spool Material</div>
-                <div class="kf-toggle-copy">Display filament material for the active spool.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_spool_material" name="show_spool_material" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_spool_remaining_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Spool Remaining</div>
-                <div class="kf-toggle-copy">Display remaining spool weight if available.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_spool_remaining" name="show_spool_remaining" value="true" />
-          </div>
-
-          <div class="kf-toggle-card">
-            <div class="kf-toggle-row">
-              <div class="kf-toggle-control">
-                <input type="checkbox" id="show_message_toggle" class="toggle-checkbox" />
-              </div>
-              <div class="kf-toggle-text">
-                <div class="kf-toggle-title">Show Status Message</div>
-                <div class="kf-toggle-copy">Display Moonraker state or status messages.</div>
-              </div>
-            </div>
-            <input type="hidden" id="show_message" name="show_message" value="true" />
-          </div>
+      <div class="ink-section-body">
+        <div class="ink-toggle-grid">
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_image_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Camera image</div><p class="ink-toggle-copy">Display a still snapshot from each printer webcam.</p></div></div><input type="hidden" id="show_image" name="show_image" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_progress_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Progress</div><p class="ink-toggle-copy">Display each printer’s current progress percentage.</p></div></div><input type="hidden" id="show_progress" name="show_progress" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_filename_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">File name</div><p class="ink-toggle-copy">Display the current file name for active jobs.</p></div></div><input type="hidden" id="show_filename" name="show_filename" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_eta_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">ETA</div><p class="ink-toggle-copy">Display estimated remaining print time.</p></div></div><input type="hidden" id="show_eta" name="show_eta" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_layers_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Layers</div><p class="ink-toggle-copy">Display current and total print layers when available.</p></div></div><input type="hidden" id="show_layers" name="show_layers" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_temps_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Temperatures</div><p class="ink-toggle-copy">Display hotend and bed temperatures.</p></div></div><input type="hidden" id="show_temps" name="show_temps" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_spool_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Active spool</div><p class="ink-toggle-copy">Display the spool assigned to the printer.</p></div></div><input type="hidden" id="show_spool" name="show_spool" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_spool_vendor_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Spool brand</div><p class="ink-toggle-copy">Display spool vendor or brand information.</p></div></div><input type="hidden" id="show_spool_vendor" name="show_spool_vendor" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_spool_material_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Spool material</div><p class="ink-toggle-copy">Display filament material for the active spool.</p></div></div><input type="hidden" id="show_spool_material" name="show_spool_material" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_spool_remaining_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Spool remaining</div><p class="ink-toggle-copy">Display remaining spool weight when available.</p></div></div><input type="hidden" id="show_spool_remaining" name="show_spool_remaining" value="true" /></div>
+          <div class="ink-toggle-card"><div class="ink-toggle-row"><div class="ink-toggle-control"><input type="checkbox" id="show_message_toggle" class="toggle-checkbox" /></div><div class="ink-toggle-text"><div class="ink-toggle-title">Status message</div><p class="ink-toggle-copy">Display Moonraker state or status messages.</p></div></div><input type="hidden" id="show_message" name="show_message" value="true" /></div>
         </div>
       </div>
     </section>
 
-    <section class="kf-link-card">
-      <a href="https://github.com/shadal18/inkypi-klipper-farm-status" target="_blank" rel="noopener noreferrer">
-        github.com/shadal18/inkypi-klipper-farm-status
-      </a>
-      <div class="kf-link-help">Setup help, updates, release notes, and source code.</div>
+    <section class="ink-link-card">
+      <span class="ink-link-icon" aria-hidden="true">⌘</span>
+      <div class="ink-link-copy">
+        <a href="https://github.com/shadal18/inkypi-klipper-farm-status" target="_blank" rel="noopener noreferrer">github.com/shadal18/inkypi-klipper-farm-status</a>
+        <div class="ink-link-help">Setup help, updates, release notes, and source code.</div>
+      </div>
     </section>
   </div>
 </div>
 
 <script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", function () {
     const defaults = {
-      title: "Klipper Farm",
-      show_image: "true",
-      show_progress: "true",
-      show_filename: "true",
-      show_eta: "true",
-      show_layers: "true",
-      show_temps: "true",
-      show_spool: "true",
-      show_spool_vendor: "true",
-      show_spool_material: "true",
-      show_spool_remaining: "true",
-      show_message: "true",
+      title: "Klipper Farm", show_image: "true", show_progress: "true", show_filename: "true", show_eta: "true",
+      show_layers: "true", show_temps: "true", show_spool: "true", show_spool_vendor: "true",
+      show_spool_material: "true", show_spool_remaining: "true", show_message: "true",
     }
-
     const printerDefaults = [{ name: "", url: "", camera_snapshot_url: "", enabled: true }]
-
     const printersContainer = document.getElementById("printers_container")
     const printersJsonInput = document.getElementById("printers_json")
     const addPrinterBtn = document.getElementById("add_printer_btn")
 
-    function initBooleanToggle(settingName, defaultValue = "true") {
-      const hiddenInput = document.getElementById(settingName)
-      const toggle = document.getElementById(settingName + "_toggle")
-
-      if (!hiddenInput || !toggle) return
-
-      let currentValue = defaultValue
-      if (
-        typeof loadPluginSettings !== "undefined" &&
-        loadPluginSettings &&
-        typeof pluginSettings !== "undefined" &&
-        pluginSettings &&
-        pluginSettings[settingName] !== undefined
-      ) {
-        currentValue = String(pluginSettings[settingName]).trim().toLowerCase()
-      }
-
-      const isEnabled = currentValue === "true"
-      hiddenInput.value = isEnabled ? "true" : "false"
-      toggle.checked = isEnabled
-
-      toggle.addEventListener("change", () => {
-        hiddenInput.value = toggle.checked ? "true" : "false"
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>'"]/g, function (char) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char]
       })
     }
 
+    function initBooleanToggle(settingName, defaultValue) {
+      const hiddenInput = document.getElementById(settingName)
+      const toggle = document.getElementById(settingName + "_toggle")
+      if (!hiddenInput || !toggle) return
+      let currentValue = defaultValue
+      if (typeof loadPluginSettings !== "undefined" && loadPluginSettings && typeof pluginSettings !== "undefined" && pluginSettings && pluginSettings[settingName] !== undefined) {
+        currentValue = String(pluginSettings[settingName]).trim().toLowerCase()
+      }
+      const isEnabled = currentValue === "true"
+      hiddenInput.value = isEnabled ? "true" : "false"
+      toggle.checked = isEnabled
+      toggle.addEventListener("change", function () { hiddenInput.value = toggle.checked ? "true" : "false" })
+    }
+
     function syncPrintersJson() {
-      const cards = printersContainer.querySelectorAll(".kf-printer-card")
-      const printers = Array.from(cards).map((card) => ({
-        name: card.querySelector(".printer-name-input")?.value?.trim() || "",
-        url: card.querySelector(".printer-url-input")?.value?.trim() || "",
-        camera_snapshot_url: card.querySelector(".printer-camera-snapshot-input")?.value?.trim() || "",
-        enabled: (card.querySelector(".printer-enabled-input")?.value || "true") === "true",
-      }))
+      const printers = Array.from(printersContainer.querySelectorAll(".ink-printer-card")).map(function (card) {
+        return {
+          name: card.querySelector(".printer-name-input").value.trim(),
+          url: card.querySelector(".printer-url-input").value.trim(),
+          camera_snapshot_url: card.querySelector(".printer-camera-snapshot-input").value.trim(),
+          enabled: card.querySelector(".printer-enabled-input").value === "true",
+        }
+      })
       printersJsonInput.value = JSON.stringify(printers)
     }
 
     function refreshPrinterTitles() {
-      printersContainer.querySelectorAll(".kf-printer-card").forEach((card, index) => {
-        const title = card.querySelector(".kf-printer-card-title")
-        if (title) title.textContent = `Printer ${index + 1}`
+      printersContainer.querySelectorAll(".ink-printer-card").forEach(function (card, index) {
+        card.querySelector(".ink-printer-card-title").textContent = "Printer " + (index + 1)
       })
     }
 
-    function createPrinterCard(printer = {}, index = 0) {
+    function createPrinterCard(printer, index) {
+      const data = printer || {}
       const card = document.createElement("div")
-      card.className = "kf-printer-card"
-
+      card.className = "ink-printer-card"
       card.innerHTML = `
-        <div class="kf-printer-card-header">
-          <div class="kf-printer-card-title">Printer ${index + 1}</div>
-          <button type="button" class="kf-remove-printer-btn">Remove</button>
+        <div class="ink-printer-card-header">
+          <div class="ink-printer-card-title">Printer ${index + 1}</div>
+          <button type="button" class="ink-remove-printer-btn">Remove</button>
         </div>
-
-        <div class="kf-grid">
-          <div class="kf-field">
-            <label class="kf-label">Printer name</label>
-            <input
-              type="text"
-              class="kf-input printer-name-input"
-              placeholder="Printer name"
-              value="${printer.name || ""}"
-            />
-          </div>
-
-          <div class="kf-field">
-            <label class="kf-label">Moonraker URL</label>
-            <input
-              type="text"
-              class="kf-input printer-url-input"
-              placeholder="http://printer-url.local:7125"
-              value="${printer.url || ""}"
-            />
-          </div>
-
-          <div class="kf-field">
-            <label class="kf-label">Camera snapshot URL (optional)</label>
-            <input
-              type="text"
-              class="kf-input printer-camera-snapshot-input"
-              placeholder="http://printer-url.local:4408/webcam/?action=snapshot"
-              value="${printer.camera_snapshot_url || ""}"
-            />
-          </div>
-
-          <div class="kf-field">
-            <label class="kf-label">Enabled</label>
-            <select class="kf-input printer-enabled-input">
-              <option value="true">Yes</option>
-              <option value="false">No</option>
-            </select>
-          </div>
-        </div>
-      `
-
-      const enabledInput = card.querySelector(".printer-enabled-input")
-      enabledInput.value = printer.enabled === false ? "false" : "true"
-
-      card.querySelector(".kf-remove-printer-btn").addEventListener("click", () => {
-        card.remove()
-        refreshPrinterTitles()
-        syncPrintersJson()
-      })
-
-      card.querySelectorAll("input, select").forEach((el) => {
-        el.addEventListener("input", syncPrintersJson)
-        el.addEventListener("change", syncPrintersJson)
-      })
-
+        <div class="ink-grid">
+          <div class="ink-field"><label class="ink-label">Printer name</label><input type="text" class="ink-input printer-name-input" placeholder="Printer name" value="${escapeHtml(data.name)}" /></div>
+          <div class="ink-field"><label class="ink-label">Moonraker URL</label><input type="text" class="ink-input printer-url-input" placeholder="http://printer.local:7125" value="${escapeHtml(data.url)}" /></div>
+          <div class="ink-field"><label class="ink-label">Camera snapshot URL</label><input type="text" class="ink-input printer-camera-snapshot-input" placeholder="Optional custom snapshot URL" value="${escapeHtml(data.camera_snapshot_url)}" /></div>
+          <div class="ink-field"><label class="ink-label">Enabled</label><select class="ink-input printer-enabled-input"><option value="true">Yes</option><option value="false">No</option></select></div>
+        </div>`
+      card.querySelector(".printer-enabled-input").value = data.enabled === false ? "false" : "true"
+      card.querySelector(".ink-remove-printer-btn").addEventListener("click", function () { card.remove(); refreshPrinterTitles(); syncPrintersJson() })
+      card.querySelectorAll("input, select").forEach(function (element) { element.addEventListener("input", syncPrintersJson); element.addEventListener("change", syncPrintersJson) })
       printersContainer.appendChild(card)
       syncPrintersJson()
     }
 
+    const values =
+      typeof loadPluginSettings !== "undefined" && loadPluginSettings && typeof pluginSettings !== "undefined" && pluginSettings
+        ? Object.assign({}, defaults, pluginSettings)
+        : defaults
     const titleInput = document.getElementById("title")
-    if (
-      typeof loadPluginSettings !== "undefined" &&
-      loadPluginSettings &&
-      typeof pluginSettings !== "undefined" &&
-      pluginSettings
-    ) {
-      if (titleInput) titleInput.value = pluginSettings.title || defaults.title
-    } else {
-      if (titleInput) titleInput.value = defaults.title
-    }
+    if (titleInput) titleInput.value = values.title != null ? values.title : defaults.title
 
     let printers = printerDefaults
-    if (
-      typeof loadPluginSettings !== "undefined" &&
-      loadPluginSettings &&
-      typeof pluginSettings !== "undefined" &&
-      pluginSettings
-    ) {
-      if (pluginSettings.printers_json) {
-        try {
-          const parsed = JSON.parse(pluginSettings.printers_json)
-          if (Array.isArray(parsed) && parsed.length) {
-            printers = parsed
-          }
-        } catch (e) {}
-      }
+    if (values.printers_json) {
+      try {
+        const parsed = JSON.parse(values.printers_json)
+        if (Array.isArray(parsed) && parsed.length) printers = parsed
+      } catch (_) {}
     }
 
     printersContainer.innerHTML = ""
-    printers.forEach((printer, index) => createPrinterCard(printer, index))
+    printers.forEach(function (printer, index) { createPrinterCard(printer, index) })
     refreshPrinterTitles()
     syncPrintersJson()
 
-    addPrinterBtn.addEventListener("click", () => {
-      createPrinterCard(
-        { name: "", url: "", camera_snapshot_url: "", enabled: true },
-        printersContainer.querySelectorAll(".kf-printer-card").length,
-      )
+    addPrinterBtn.addEventListener("click", function () {
+      createPrinterCard({ name: "", url: "", camera_snapshot_url: "", enabled: true }, printersContainer.querySelectorAll(".ink-printer-card").length)
       refreshPrinterTitles()
       syncPrintersJson()
     })
 
-    initBooleanToggle("show_image", "true")
-    initBooleanToggle("show_progress", "true")
-    initBooleanToggle("show_filename", "true")
-    initBooleanToggle("show_eta", "true")
-    initBooleanToggle("show_layers", "true")
-    initBooleanToggle("show_temps", "true")
-    initBooleanToggle("show_spool", "true")
-    initBooleanToggle("show_spool_vendor", "true")
-    initBooleanToggle("show_spool_material", "true")
-    initBooleanToggle("show_spool_remaining", "true")
-    initBooleanToggle("show_message", "true")
+    Object.keys(defaults).filter(function (key) { return key !== "title" }).forEach(function (key) { initBooleanToggle(key, defaults[key]) })
 
     if (typeof kofiWidgetOverlay !== "undefined") {
+      const messages = ["I ♥ Coffee", "Tip Jar", "Fuel the Pixels", "Buy Me a Coffee", "Keep InkyPi Brewing"]
+      const message = messages[Math.floor(Math.random() * messages.length)]
       kofiWidgetOverlay.draw("shadal", {
         type: "floating-chat",
-        "floating-chat.donateButton.text": "I ❤️ Coffee",
+        "floating-chat.donateButton.text": message,
         "floating-chat.donateButton.background-color": "#00b9fe",
         "floating-chat.donateButton.text-color": "#fff",
       })
